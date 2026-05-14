@@ -377,6 +377,13 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .chip-webster.active{background:#22c55e;}
 .chip-paccar.active{background:#fb923c;}
 .chip-nr.active{background:#a78bfa;}
+
+.col-hdr{display:grid;grid-template-columns:55px 1fr 80px 38px 55px;padding:4px 14px 4px 30px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);}
+.col-hdr span{font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;}
+.col-hdr span:nth-child(3){text-align:right;}
+.col-hdr span:nth-child(4){text-align:center;}
+.col-hdr span:nth-child(5){text-align:right;}
+.entity-Ent{background:rgba(56,189,248,0.12);color:#7dd3fc;}
 </style>
 </head>
 <body>
@@ -509,314 +516,320 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 
 <div id="toast"></div>
 
+
 <script>
-const CATEGORIES = [
-  { id:'mortgage', label:'Real Estate / Mortgage', type:'cat-mortgage', color:'#c084fc', dotColor:'#c084fc',
-    groups:[{ lender:'Wintrust', badge:'badge-wintrust', loans:[
-      { entity:'Bros', desc:'SBA Mortgage — 1122 Milford Rd', balance:1574131.66, rate:3.61, maturity:'2046-04', contact:'Sinead Murphy' }
+var CATS = [
+  {id:"mortgage",label:"Real Estate / Mortgage",cls:"cat-mortgage",color:"#c084fc",dot:"#c084fc",
+    groups:[{lender:"Wintrust",badge:"badge-wintrust",loans:[
+      {en:"Bros",desc:"SBA Mortgage - 1122 Milford Rd",bal:1574131.66,rate:3.61,mat:"2046-04",con:"Sinead Murphy"}
     ]}]
   },
-  { id:'equipment', label:'Equipment / Trucks', type:'cat-equipment', color:'#38bdf8', dotColor:'#38bdf8',
+  {id:"equipment",label:"Equipment / Trucks",cls:"cat-equipment",color:"#38bdf8",dot:"#38bdf8",
     groups:[
-      { lender:'BMO', badge:'badge-bmo', loans:[
-        { entity:'Bros', desc:'2019 Kenworth T680', balance:8901.59, rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2019 Kenworth T680', balance:8901.59, rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2020 Kenworth T680', balance:15664.29, rate:4.49, maturity:'2025-09', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2020 Kenworth T680', balance:13355.81, rate:4.49, maturity:'2025-06', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2021 Kenworth T680', balance:29268.47, rate:3.99, maturity:'2026-06', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2021 Kenworth T680', balance:29268.47, rate:3.99, maturity:'2026-06', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2022 Kenworth W990', balance:64498.79, rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2022 Kenworth W990', balance:64498.79, rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2022 Kenworth W990', balance:64498.79, rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
-        { entity:'Bros', desc:'2023 Kenworth W990', balance:108686.49, rate:6.35, maturity:'2028-10', contact:'Tony Hagen' }
+      {lender:"BMO",badge:"badge-bmo",loans:[
+        {en:"Bros",desc:"2019 Kenworth T680",bal:8901.59,rate:5.24,mat:"2025-03",con:"Tony Hagen"},
+        {en:"Bros",desc:"2019 Kenworth T680",bal:8901.59,rate:5.24,mat:"2025-03",con:"Tony Hagen"},
+        {en:"Bros",desc:"2020 Kenworth T680",bal:15664.29,rate:4.49,mat:"2025-09",con:"Tony Hagen"},
+        {en:"Bros",desc:"2020 Kenworth T680",bal:13355.81,rate:4.49,mat:"2025-06",con:"Tony Hagen"},
+        {en:"Bros",desc:"2021 Kenworth T680",bal:29268.47,rate:3.99,mat:"2026-06",con:"Tony Hagen"},
+        {en:"Bros",desc:"2021 Kenworth T680",bal:29268.47,rate:3.99,mat:"2026-06",con:"Tony Hagen"},
+        {en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05",con:"Tony Hagen"},
+        {en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05",con:"Tony Hagen"},
+        {en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05",con:"Tony Hagen"},
+        {en:"Bros",desc:"2023 Kenworth W990",bal:108686.49,rate:6.35,mat:"2028-10",con:"Tony Hagen"}
       ]},
-      { lender:'Paccar', badge:'badge-paccar', loans:[
-        { entity:'Bros', desc:'2021 Kenworth T680', balance:38214.32, rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
-        { entity:'Bros', desc:'2021 Kenworth T680', balance:38214.32, rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
-        { entity:'Bros', desc:'2021 Kenworth T680', balance:38214.32, rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
-        { entity:'Bros', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-        { entity:'Bros', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-        { entity:'Bros', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-        { entity:'MH1', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-        { entity:'MH1', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-        { entity:'MH2', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-        { entity:'MH2', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-        { entity:'MH3', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-        { entity:'MH3', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-        { entity:'MH5', desc:'2023 Kenworth W990', balance:84512.67, rate:5.49, maturity:'2028-09', contact:'Jerry Brown' },
-        { entity:'MH5', desc:'2023 Kenworth W990', balance:84512.67, rate:5.49, maturity:'2028-09', contact:'Jerry Brown' },
-        { entity:'SAE', desc:'2024 Kenworth T680', balance:98744.22, rate:5.99, maturity:'2029-04', contact:'Jerry Brown' },
-        { entity:'SAE', desc:'2024 Kenworth T680', balance:98744.22, rate:5.99, maturity:'2029-04', contact:'Jerry Brown' },
-        { entity:'WHS', desc:'2024 Kenworth W990', balance:112388.55, rate:6.25, maturity:'2029-07', contact:'Jerry Brown' },
-        { entity:'WHS', desc:'2024 Kenworth W990', balance:112388.55, rate:6.25, maturity:'2029-07', contact:'Jerry Brown' }
+      {lender:"Paccar",badge:"badge-paccar",loans:[
+        {en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05",con:"Jerry Brown"},
+        {en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05",con:"Jerry Brown"},
+        {en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05",con:"Jerry Brown"},
+        {en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
+        {en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
+        {en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
+        {en:"MH1",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
+        {en:"MH1",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
+        {en:"MH2",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
+        {en:"MH2",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
+        {en:"MH3",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
+        {en:"MH3",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
+        {en:"MH5",desc:"2023 Kenworth W990",bal:84512.67,rate:5.49,mat:"2028-09",con:"Jerry Brown"},
+        {en:"MH5",desc:"2023 Kenworth W990",bal:84512.67,rate:5.49,mat:"2028-09",con:"Jerry Brown"},
+        {en:"SAE",desc:"2024 Kenworth T680",bal:98744.22,rate:5.99,mat:"2029-04",con:"Jerry Brown"},
+        {en:"SAE",desc:"2024 Kenworth T680",bal:98744.22,rate:5.99,mat:"2029-04",con:"Jerry Brown"},
+        {en:"WHS",desc:"2024 Kenworth W990",bal:112388.55,rate:6.25,mat:"2029-07",con:"Jerry Brown"},
+        {en:"WHS",desc:"2024 Kenworth W990",bal:112388.55,rate:6.25,mat:"2029-07",con:"Jerry Brown"}
       ]}
     ]
   },
-  { id:'trailer', label:'Trailer / Dry Van / Reefer', type:'cat-trailer', color:'#34d399', dotColor:'#34d399',
-    groups:[{ lender:'Webster', badge:'badge-webster', loans:[
-      { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
-      { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
-      { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
-      { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
-      { entity:'Bros', desc:'2022 Utility 4000DX 53ft Flatbed', balance:35064.62, rate:5.50, maturity:'2027-10', contact:'Michael Weinberger' },
-      { entity:'Bros', desc:'2023 Utility 4000DX 53ft Flatbed', balance:41250.00, rate:6.25, maturity:'2028-12', contact:'Michael Weinberger' }
+  {id:"trailer",label:"Trailer / Dry Van / Reefer",cls:"cat-trailer",color:"#34d399",dot:"#34d399",
+    groups:[{lender:"Webster",badge:"badge-webster",loans:[
+      {en:"Bros",desc:"2022 Utility 3000R 53ft Reefer",bal:28611.87,rate:5.35,mat:"2027-08",con:"M. Weinberger"},
+      {en:"Bros",desc:"2022 Utility 3000R 53ft Reefer",bal:28611.87,rate:5.35,mat:"2027-08",con:"M. Weinberger"},
+      {en:"Ent",desc:"2021 Hyundai Translead 53ft Dry Van",bal:19014.59,rate:3.85,mat:"2026-11",con:"M. Weinberger"},
+      {en:"Ent",desc:"2021 Hyundai Translead 53ft Dry Van",bal:19014.59,rate:3.85,mat:"2026-11",con:"M. Weinberger"},
+      {en:"Bros",desc:"2022 Utility 4000DX 53ft Flatbed",bal:35064.62,rate:5.50,mat:"2027-10",con:"M. Weinberger"},
+      {en:"Bros",desc:"2023 Utility 4000DX 53ft Flatbed",bal:41250.00,rate:6.25,mat:"2028-12",con:"M. Weinberger"}
     ]}]
   },
-  { id:'receivable', label:'Notes Receivable (Assets)', type:'cat-receivable', color:'#a78bfa', dotColor:'#a78bfa', isAsset:true,
-    groups:[{ lender:'Internal', badge:'badge-nr', loans:[
-      { entity:'Various', desc:'Owner-Operator Lease-Purchase (31+ operators)', balance:null, rate:null, maturity:null, weekly:'$307–$997/wk' },
-      { entity:'External', desc:'Rockford Brake Manufacturing — Promissory Note', balance:100000, rate:null, maturity:null }
+  {id:"receivable",label:"Notes Receivable (Assets)",cls:"cat-receivable",color:"#a78bfa",dot:"#a78bfa",isAsset:true,
+    groups:[{lender:"Internal",badge:"badge-nr",loans:[
+      {en:"Various",desc:"Owner-Operator Lease-Purchase (31+ operators)",bal:null,rate:null,mat:null,weekly:"$307-$997/wk"},
+      {en:"External",desc:"Rockford Brake Mfg - Promissory Note",bal:100000,rate:null,mat:null}
     ]}]
   }
 ];
 
-const LENDER_CHIPS = [
-  { id:'All', label:'All Lenders', cls:'', lenders:['Wintrust','BMO','Webster','Paccar','Internal'] },
-  { id:'Wintrust', label:'Wintrust', cls:'chip-wintrust', lenders:['Wintrust'] },
-  { id:'BMO', label:'BMO', cls:'chip-bmo', lenders:['BMO'] },
-  { id:'Webster', label:'Webster', cls:'chip-webster', lenders:['Webster'] },
-  { id:'Paccar', label:'Paccar', cls:'chip-paccar', lenders:['Paccar'] },
-  { id:'NR', label:'Notes Recv.', cls:'chip-nr', lenders:['Internal'] }
+var LCHIPS = [
+  {id:"All",label:"All Lenders",cls:"",lenders:["Wintrust","BMO","Webster","Paccar","Internal"]},
+  {id:"Wintrust",label:"Wintrust",cls:"chip-wintrust",lenders:["Wintrust"]},
+  {id:"BMO",label:"BMO",cls:"chip-bmo",lenders:["BMO"]},
+  {id:"Webster",label:"Webster",cls:"chip-webster",lenders:["Webster"]},
+  {id:"Paccar",label:"Paccar",cls:"chip-paccar",lenders:["Paccar"]},
+  {id:"NR",label:"Notes Recv.",cls:"chip-nr",lenders:["Internal"]}
 ];
 
-let files=[], activeFileId=null, activeSheet=0, sortState={col:-1,asc:true};
-let activeLender='All', openCategories=new Set(['mortgage','equipment','trailer']), openLenderGroups=new Set(), currentView='dashboard';
-const STORAGE='mfh_files_v4';
+var files=[], activeFileId=null, activeSheet=0, sortState={col:-1,asc:true};
+var activeLender="All", openCats={"mortgage":1,"equipment":1,"trailer":1}, openLGs={};
+var STORAGE="mfh_v5";
 
-window.addEventListener('DOMContentLoaded', () => {
-  loadFiles(); setupDrop();
-  document.getElementById('file-input').addEventListener('change', e => handleFiles(e.target.files));
-  // Event delegation for dashboard interactions
-  document.getElementById('loan-scroll').addEventListener('click', e => {
-    const catHdr = e.target.closest('.loan-cat-header');
-    if (catHdr) { const catEl = catHdr.closest('.loan-category'); if (catEl) toggleCat(catEl.dataset.catId); return; }
-    const lgHdr = e.target.closest('.lender-group-header');
-    if (lgHdr) { const lgEl = lgHdr.closest('.lender-group'); if (lgEl) toggleLG(lgEl.dataset.lgId); return; }
+window.addEventListener("DOMContentLoaded", function() {
+  loadFiles();
+  setupDrop();
+  document.getElementById("file-input").addEventListener("change", function(e){ handleFiles(e.target.files); });
+  document.getElementById("loan-scroll").addEventListener("click", function(e) {
+    var ch = e.target.closest(".loan-cat-header");
+    if (ch) { var cat = ch.closest(".loan-category"); if(cat) toggleCat(cat.getAttribute("data-cat")); return; }
+    var lh = e.target.closest(".lender-group-header");
+    if (lh) { var lg = lh.closest(".lender-group"); if(lg) toggleLG(lg.getAttribute("data-lg")); }
   });
-  document.getElementById('lender-strip').addEventListener('click', e => {
-    const chip = e.target.closest('.ls-chip');
-    if (chip && chip.dataset.lenderId) setLender(chip.dataset.lenderId);
+  document.getElementById("lender-strip").addEventListener("click", function(e) {
+    var chip = e.target.closest(".ls-chip");
+    if (chip) setLender(chip.getAttribute("data-lid"));
   });
-  document.getElementById('nav-dashboard').addEventListener('click', () => switchView('dashboard'));
-  document.getElementById('nav-raw').addEventListener('click', () => switchView('raw'));
+  document.getElementById("nav-dashboard").addEventListener("click", function(){ switchView("dashboard"); });
+  document.getElementById("nav-raw").addEventListener("click", function(){ switchView("raw"); });
   renderDashboard();
 });
 
 function switchView(v) {
-  currentView=v;
-  document.getElementById('view-dashboard').style.display = v==='dashboard'?'flex':'none';
-  document.getElementById('view-raw').style.display = v==='raw'?'flex':'none';
-  document.getElementById('nav-dashboard').className = 'nav-pill'+(v==='dashboard'?' active':'');
-  document.getElementById('nav-raw').className = 'nav-pill'+(v==='raw'?' active':'');
+  document.getElementById("view-dashboard").style.display = v==="dashboard" ? "flex" : "none";
+  document.getElementById("view-raw").style.display = v==="raw" ? "flex" : "none";
+  document.getElementById("nav-dashboard").className = "nav-pill" + (v==="dashboard" ? " active" : "");
+  document.getElementById("nav-raw").className = "nav-pill" + (v==="raw" ? " active" : "");
 }
 
-function monthsDiff(m) { if(!m) return Infinity; const [y,mo]=m.split('-').map(Number); return (y-2026)*12+(mo-1); }
-function matCls(m) { const d=monthsDiff(m); if(d===Infinity) return 'mat-long'; if(d<=12) return 'mat-urgent'; if(d<=24) return 'mat-warn'; if(d<=60) return 'mat-ok'; return 'mat-long'; }
-function fmtMat(m) {
-  if(!m) return '<span class="mat-long">—</span>';
-  const [y,mo]=m.split('-'); const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const flag=matCls(m)==='mat-urgent'?' ⚑':'';
-  return '<span class="'+matCls(m)+'">'+mon[parseInt(mo,10)-1]+' '+y+flag+'<\/span>';
+function mdiff(m) { if(!m) return 99999; var p=m.split("-"); return (parseInt(p[0])-2026)*12+(parseInt(p[1])-1); }
+function mcls(m) { var d=mdiff(m); if(d<=12) return "mat-urgent"; if(d<=24) return "mat-warn"; if(d<=60) return "mat-ok"; return "mat-long"; }
+var MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function fmtmat(m) {
+  if(!m) return "<span class=\"mat-long\">-</span>";
+  var p=m.split("-"), flag=mcls(m)==="mat-urgent"?" !":"";
+  return "<span class=\""+mcls(m)+"\">"+MONS[parseInt(p[1],10)-1]+" "+p[0]+flag+"</span>";
 }
-function findNextMat() {
-  let best=null;
-  CATEGORIES.forEach(cat => { if(cat.isAsset) return; cat.groups.forEach(g => g.loans.forEach(l => { if(l.maturity){const d=monthsDiff(l.maturity);if(d>=0&&(best===null||d<monthsDiff(best)))best=l.maturity;} })); });
+function nextmat() {
+  var best=null;
+  CATS.forEach(function(cat){ if(cat.isAsset) return; cat.groups.forEach(function(g){ g.loans.forEach(function(l){ if(l.mat&&mdiff(l.mat)>=0&&(best===null||mdiff(l.mat)<mdiff(best))) best=l.mat; }); }); });
   return best;
 }
-function getAllLoans() { const loans=[]; CATEGORIES.forEach(cat => { if(!cat.isAsset) cat.groups.forEach(g => g.loans.forEach(l => loans.push(l))); }); return loans; }
+function allloans() {
+  var r=[]; CATS.forEach(function(cat){ if(!cat.isAsset) cat.groups.forEach(function(g){ g.loans.forEach(function(l){ r.push(l); }); }); }); return r;
+}
 
-function renderDashboard() { renderKPIs(); renderLenderStrip(); renderLoanCategories(); renderFooter(); }
+function renderDashboard() { renderKPIs(); renderStrip(); renderCats(); renderFooter(); }
 
 function renderKPIs() {
-  const loans=getAllLoans(), total=loans.reduce((s,l)=>s+l.balance,0), avg=loans.reduce((s,l)=>s+l.rate,0)/loans.length;
-  const nm=findNextMat(), [ny,nmo]=nm.split('-'), mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('kpi-total').textContent=fmtFull(total);
-  document.getElementById('kpi-count').textContent=loans.length;
-  document.getElementById('kpi-rate').textContent=avg.toFixed(2)+'%';
-  document.getElementById('kpi-maturity').textContent=mon[parseInt(nmo,10)-1]+' '+ny;
+  var loans=allloans(), tot=loans.reduce(function(s,l){return s+l.bal;},0);
+  var avg=loans.reduce(function(s,l){return s+l.rate;},0)/loans.length;
+  var nm=nextmat(), p=nm?nm.split("-"):["?","01"];
+  document.getElementById("kpi-total").textContent=fmt(tot);
+  document.getElementById("kpi-count").textContent=loans.length;
+  document.getElementById("kpi-rate").textContent=avg.toFixed(2)+"%";
+  document.getElementById("kpi-maturity").textContent=MONS[parseInt(p[1],10)-1]+" "+p[0];
 }
 
-function renderLenderStrip() {
-  const allLoans=getAllLoans(), counts={All:allLoans.length};
-  LENDER_CHIPS.slice(1).forEach(chip=>{counts[chip.id]=0;CATEGORIES.forEach(cat=>cat.groups.forEach(g=>{if(chip.lenders.includes(g.lender))counts[chip.id]+=g.loans.length;}));});
-  document.getElementById('lender-strip').innerHTML=LENDER_CHIPS.map(chip=>{
-    const isAct=activeLender===chip.id;
-    const cls=chip.id==='All'?('ls-chip'+(isAct?' all-active':'')):('ls-chip '+chip.cls+(isAct?' active':''));
-    return '<div class="'+cls+'" data-lender-id="'+chip.id+'">'+chip.label+'<span class="lc">'+counts[chip.id]+'<\/span><\/div>';
-  }).join('');
-}
-
-function setLender(id) { activeLender=id; renderLenderStrip(); renderLoanCategories(); }
-function toggleCat(id) { if(openCategories.has(id)) openCategories.delete(id); else openCategories.add(id); renderLoanCategories(); }
-function toggleLG(id) { if(openLenderGroups.has(id)) openLenderGroups.delete(id); else openLenderGroups.add(id); renderLoanCategories(); }
-
-function renderLoanCategories() {
-  const scroll=document.getElementById('loan-scroll');
-  const activeLenders=LENDER_CHIPS.find(c=>c.id===activeLender)?.lenders||[];
-  let html='';
-
-  CATEGORIES.forEach(cat => {
-    const groups=activeLender==='All'?cat.groups:cat.groups.filter(g=>activeLenders.includes(g.lender));
-    if(!groups.length) return;
-    const catLoans=groups.flatMap(g=>g.loans);
-    const catTotal=catLoans.filter(l=>l.balance).reduce((s,l)=>s+l.balance,0);
-    const isOpen=openCategories.has(cat.id);
-
-    html+='<div class="loan-category '+(isOpen?'open ':'')+cat.type+'" data-cat-id="'+cat.id+'">';
-    html+='<div class="loan-cat-header"><div class="loan-cat-left">';
-    html+='<div class="cat-dot-lg" style="background:'+cat.dotColor+'"></div>';
-    html+='<div class="cat-label-block"><div class="cat-name">'+esc(cat.label)+'<\/div>';
-    html+='<div class="cat-meta">'+catLoans.length+' instrument'+(catLoans.length!==1?'s':'')+' across '+groups.length+' lender'+(groups.length!==1?'s':'')+'<\/div><\/div><\/div>';
-    html+='<div class="cat-right"><div class="cat-total">'+(cat.isAsset?'<span style="color:#a78bfa">ASSETS<\/span>':fmtFull(catTotal))+'<\/div>';
-    html+='<div class="cat-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"\/><\/svg><\/div><\/div><\/div>';
-
-    if(isOpen){
-      html+='<div class="loan-rows">';
-      if(cat.isAsset){
-        html+='<div class="nr-banner"><div class="nr-banner-title">Notes Receivable — Money Owed TO Meiborg<\/div>';
-        html+='<div class="nr-stats"><div class="nr-stat"><div class="nr-stat-label">Operators<\/div><div class="nr-stat-value">31+<\/div><\/div>';
-        html+='<div class="nr-stat"><div class="nr-stat-label">Weekly Range<\/div><div class="nr-stat-value" style="font-size:11px;">$307–$997<\/div><\/div>';
-        html+='<div class="nr-stat"><div class="nr-stat-label">Rockford Note<\/div><div class="nr-stat-value">$100K<\/div><\/div><\/div><\/div>';
-      }
-
-      groups.forEach(g => {
-        const lgId=cat.id+'_'+g.lender;
-        const lgOpen=openLenderGroups.has(lgId);
-        const lgTotal=g.loans.filter(l=>l.balance).reduce((s,l)=>s+l.balance,0);
-        html+='<div class="lender-group '+(lgOpen?'lg-open ':'')+'" data-lg-id="'+lgId+'">';
-        html+='<div class="lender-group-header"><div class="lg-left"><span class="lg-badge '+g.badge+'">'+esc(g.lender)+'<\/span>';
-        html+='<span class="lg-count">'+g.loans.length+' loan'+(g.loans.length!==1?'s':'')+'<\/span><\/div>';
-        html+='<div style="display:flex;align-items:center;gap:8px;"><div class="lg-total">'+(lgTotal?fmtFull(lgTotal):'—')+'<\/div>';
-        html+='<div class="lg-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"\/><\/svg><\/div><\/div><\/div>';
-
-        if(lgOpen){
-          html+='<div class="lender-group-rows">';
-          html+='<div style="display:grid;grid-template-columns:55px 1fr 80px 38px 55px;padding:4px 14px 4px 30px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);">';
-          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;">Entity<\/div>';
-          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding-left:6px;">Description<\/div>';
-          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Balance<\/div>';
-          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:center;">Rate<\/div>';
-          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Matures<\/div><\/div>';
-          g.loans.forEach(loan => {
-            html+='<div class="loan-row"><span class="lr-entity entity-'+loan.entity+'">'+esc(loan.entity)+'<\/span>';
-            html+='<div class="lr-desc" title="'+esc(loan.desc)+'">'+esc(loan.desc)+'<\/div>';
-            html+='<div class="lr-balance'+(cat.isAsset?' is-asset':'')+'">'+
-              (loan.balance?fmtFull(loan.balance):(loan.weekly?'<span style="color:var(--gold);font-size:9.5px;">'+esc(loan.weekly||'')+'<\/span>':'<span style="color:var(--text3)">—<\/span>'))+'<\/div>';
-            html+='<div class="lr-rate">'+(loan.rate?loan.rate.toFixed(2)+'%':'—')+'<\/div>';
-            html+='<div class="lr-maturity">'+fmtMat(loan.maturity)+'<\/div><\/div>';
-          });
-          if(lgTotal){ html+='<div class="cat-subtotal"><span class="cst-label">'+g.lender+' Subtotal<\/span><span class="cst-val" style="color:'+cat.color+'">'+fmtFull(lgTotal)+'<\/span><\/div>'; }
-          html+='<\/div>';
-        }
-        html+='<\/div>';
-      });
-
-      if(!cat.isAsset && catTotal){
-        html+='<div class="cat-subtotal" style="background:var(--bg4)"><span class="cst-label" style="font-weight:700">Category Total<\/span><span class="cst-val" style="color:'+cat.color+';font-size:13px">'+fmtFull(catTotal)+'<\/span><\/div>';
-      }
-      html+='<\/div>';
-    }
-    html+='<\/div>';
+function renderStrip() {
+  var loans=allloans(), counts={All:loans.length};
+  LCHIPS.slice(1).forEach(function(chip){
+    counts[chip.id]=0;
+    CATS.forEach(function(cat){ cat.groups.forEach(function(g){ if(chip.lenders.indexOf(g.lender)>=0) counts[chip.id]+=g.loans.length; }); });
   });
-  scroll.innerHTML=html;
+  var h="";
+  LCHIPS.forEach(function(chip){
+    var isAct=activeLender===chip.id;
+    var cls=chip.id==="All"?"ls-chip"+(isAct?" all-active":""):"ls-chip "+chip.cls+(isAct?" active":"");
+    h+="<div class=\""+cls+"\" data-lid=\""+chip.id+"\">"+chip.label+"<span class=\"lc\">"+counts[chip.id]+"</span></div>";
+  });
+  document.getElementById("lender-strip").innerHTML=h;
+}
+
+function setLender(id){ activeLender=id; renderStrip(); renderCats(); }
+function toggleCat(id){ if(openCats[id]) delete openCats[id]; else openCats[id]=1; renderCats(); }
+function toggleLG(id){ if(openLGs[id]) delete openLGs[id]; else openLGs[id]=1; renderCats(); }
+
+function renderCats() {
+  var scroll=document.getElementById("loan-scroll"), h="";
+  var actLenders=LCHIPS.filter(function(c){return c.id===activeLender;})[0];
+  var lnds=actLenders?actLenders.lenders:["Wintrust","BMO","Webster","Paccar","Internal"];
+
+  CATS.forEach(function(cat){
+    var groups=activeLender==="All"?cat.groups:cat.groups.filter(function(g){return lnds.indexOf(g.lender)>=0;});
+    if(!groups.length) return;
+    var catLoans=[], catTot=0;
+    groups.forEach(function(g){ g.loans.forEach(function(l){ catLoans.push(l); if(l.bal) catTot+=l.bal; }); });
+    var isOpen=openCats[cat.id];
+
+    h+="<div class=\"loan-category"+(isOpen?" open ":" ")+cat.cls+"\" data-cat=\""+cat.id+"\">";
+    h+="<div class=\"loan-cat-header\">";
+    h+="<div class=\"loan-cat-left\"><div class=\"cat-dot-lg\" style=\"background:"+cat.dot+"\"></div>";
+    h+="<div class=\"cat-label-block\"><div class=\"cat-name\">"+esc(cat.label)+"</div>";
+    h+="<div class=\"cat-meta\">"+catLoans.length+" instrument"+(catLoans.length!==1?"s":"")+" across "+groups.length+" lender"+(groups.length!==1?"s":"")+"</div></div></div>";
+    h+="<div class=\"cat-right\"><div class=\"cat-total\">"+(cat.isAsset?"<span style=\"color:#a78bfa\">ASSETS</span>":fmt(catTot))+"</div>";
+    h+="<div class=\"cat-chevron\"><svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg></div></div></div>";
+
+    if(isOpen) {
+      h+="<div class=\"loan-rows\">";
+      if(cat.isAsset) {
+        h+="<div class=\"nr-banner\"><div class=\"nr-banner-title\">Notes Receivable - Owed TO Meiborg</div>";
+        h+="<div class=\"nr-stats\">";
+        h+="<div class=\"nr-stat\"><div class=\"nr-stat-label\">Operators</div><div class=\"nr-stat-value\">31+</div></div>";
+        h+="<div class=\"nr-stat\"><div class=\"nr-stat-label\">Weekly Range</div><div class=\"nr-stat-value\" style=\"font-size:11px\">$307-$997</div></div>";
+        h+="<div class=\"nr-stat\"><div class=\"nr-stat-label\">Rockford Note</div><div class=\"nr-stat-value\">$100K</div></div>";
+        h+="</div></div>";
+      }
+      groups.forEach(function(g){
+        var lgid=cat.id+"_"+g.lender, lgOpen=openLGs[lgid];
+        var lgTot=g.loans.reduce(function(s,l){return s+(l.bal||0);},0);
+        h+="<div class=\"lender-group"+(lgOpen?" lg-open\":" \"")+" data-lg=\""+lgid+"\">";
+        h+="<div class=\"lender-group-header\"><div class=\"lg-left\"><span class=\"lg-badge "+g.badge+"\">"+esc(g.lender)+"</span>";
+        h+="<span class=\"lg-count\">"+g.loans.length+" loan"+(g.loans.length!==1?"s":"")+"</span></div>";
+        h+="<div style=\"display:flex;align-items:center;gap:8px\"><div class=\"lg-total\">"+(lgTot?fmt(lgTot):"-")+"</div>";
+        h+="<div class=\"lg-chevron\"><svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg></div></div></div>";
+        if(lgOpen) {
+          h+="<div class=\"lender-group-rows\">";
+          h+="<div class=\"col-hdr\"><span>Entity</span><span>Description</span><span>Balance</span><span>Rate</span><span>Matures</span></div>";
+          g.loans.forEach(function(loan){
+            h+="<div class=\"loan-row\"><span class=\"lr-entity entity-"+loan.en+"\">"+esc(loan.en)+"</span>";
+            h+="<div class=\"lr-desc\" title=\""+esc(loan.desc)+"\">"+esc(loan.desc)+"</div>";
+            h+="<div class=\"lr-balance"+(cat.isAsset?" is-asset\":" \"")+">";
+            if(loan.bal) h+=fmt(loan.bal);
+            else if(loan.weekly) h+="<span style=\"color:var(--gold)\">"+esc(loan.weekly)+"</span>";
+            else h+="-";
+            h+="</div>";
+            h+="<div class=\"lr-rate\">"+(loan.rate?loan.rate.toFixed(2)+"%":"-")+"</div>";
+            h+="<div class=\"lr-maturity\">"+fmtmat(loan.mat)+"</div></div>";
+          });
+          if(lgTot) h+="<div class=\"cat-subtotal\"><span class=\"cst-label\">"+g.lender+" Subtotal</span><span class=\"cst-val\" style=\"color:"+cat.color+"\">"+fmt(lgTot)+"</span></div>";
+          h+="</div>";
+        }
+        h+="</div>";
+      });
+      if(!cat.isAsset&&catTot) h+="<div class=\"cat-subtotal\" style=\"background:var(--bg4)\"><span class=\"cst-label\" style=\"font-weight:700\">Category Total</span><span class=\"cst-val\" style=\"color:"+cat.color+";font-size:13px\">"+fmt(catTot)+"</span></div>";
+      h+="</div>";
+    }
+    h+="</div>";
+  });
+  scroll.innerHTML=h;
 }
 
 function renderFooter(){
-  const loans=getAllLoans(), total=loans.reduce((s,l)=>s+l.balance,0);
-  document.getElementById('df-total').textContent=fmtFull(total);
-  document.getElementById('df-sub').textContent=loans.length+' active loans across 4 lenders · 5 legal entities';
+  var loans=allloans(), tot=loans.reduce(function(s,l){return s+l.bal;},0);
+  document.getElementById("df-total").textContent=fmt(tot);
+  document.getElementById("df-sub").textContent=loans.length+" active loans across 4 lenders | 5 legal entities";
 }
 
 function setupDrop(){
-  const zone=document.getElementById('drop-zone');
-  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
-  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
-  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');handleFiles(e.dataTransfer.files);});
+  var zone=document.getElementById("drop-zone");
+  zone.addEventListener("dragover",function(e){e.preventDefault();zone.classList.add("drag-over");});
+  zone.addEventListener("dragleave",function(){zone.classList.remove("drag-over");});
+  zone.addEventListener("drop",function(e){e.preventDefault();zone.classList.remove("drag-over");handleFiles(e.dataTransfer.files);});
 }
 function handleFiles(fl){
-  Array.from(fl).forEach(file=>{
-    const ext=file.name.split('.').pop().toLowerCase();
-    if(!['xlsx','xls','csv'].includes(ext)){showToast('Unsupported: .'+ext,'error');return;}
-    const reader=new FileReader();
-    reader.onload=e=>{
-      const sheets=parseFile(e.target.result,ext);
-      if(!sheets){showToast('Could not parse '+file.name,'error');return;}
-      const id=Date.now()+Math.random();
-      files.unshift({id,name:file.name,ext,date:new Date().toLocaleDateString(),base64:e.target.result,sheets});
-      persistFiles();renderSidebar();setActiveFile(id);showToast('Loaded '+file.name,'success');
+  Array.from(fl).forEach(function(file){
+    var ext=file.name.split(".").pop().toLowerCase();
+    if(["xlsx","xls","csv"].indexOf(ext)<0){showToast("Unsupported: ."+ext,"error");return;}
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var sheets=parseFile(e.target.result,ext);
+      if(!sheets){showToast("Could not parse "+file.name,"error");return;}
+      var id=Date.now()+Math.random();
+      files.unshift({id:id,name:file.name,ext:ext,date:new Date().toLocaleDateString(),base64:e.target.result,sheets:sheets});
+      persistFiles();renderSidebar();setActive(id);showToast("Loaded "+file.name,"success");
     };
     reader.readAsDataURL(file);
   });
 }
 function parseFile(dataUrl,ext){
   try{
-    const b64=dataUrl.split(',')[1],binary=atob(b64),bytes=new Uint8Array(binary.length);
-    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-    const wb=ext==='csv'?XLSX.read(new TextDecoder().decode(bytes),{type:'string'}):XLSX.read(bytes,{type:'array'});
-    return wb.SheetNames.map(name=>({name,data:XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:''})}));
+    var b64=dataUrl.split(",")[1],binary=atob(b64),bytes=new Uint8Array(binary.length);
+    for(var i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+    var wb=ext==="csv"?XLSX.read(new TextDecoder().decode(bytes),{type:"string"}):XLSX.read(bytes,{type:"array"});
+    return wb.SheetNames.map(function(name){return{name:name,data:XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:""})};});
   }catch(e){console.error(e);return null;}
 }
-function persistFiles(){try{localStorage.setItem(STORAGE,JSON.stringify(files));}catch(e){if(files.length>1){files.pop();persistFiles();}else showToast('Storage full','error');}}
-function loadFiles(){try{const raw=localStorage.getItem(STORAGE);if(raw){files=JSON.parse(raw);renderSidebar();}}catch(e){files=[];}}
-function deleteFile(id,e){e.stopPropagation();files=files.filter(f=>f.id!==id);persistFiles();if(activeFileId===id)activeFileId=null;renderSidebar();showToast('File removed');}
-function setActiveFile(id){activeFileId=id;activeSheet=0;sortState={col:-1,asc:true};renderSidebar();renderViewer();}
+function persistFiles(){try{localStorage.setItem(STORAGE,JSON.stringify(files));}catch(e){if(files.length>1){files.pop();persistFiles();}else showToast("Storage full","error");}}
+function loadFiles(){try{var raw=localStorage.getItem(STORAGE);if(raw){files=JSON.parse(raw);renderSidebar();}}catch(e){files=[];}}
+function deleteFile(id,e){e.stopPropagation();files=files.filter(function(f){return f.id!==id;});persistFiles();if(activeFileId===id)activeFileId=null;renderSidebar();showToast("File removed");}
+function setActive(id){activeFileId=id;activeSheet=0;sortState={col:-1,asc:true};renderSidebar();renderViewer();}
 function renderSidebar(){
-  const list=document.getElementById('file-list'),empty=document.getElementById('empty-files');
-  document.getElementById('file-count').textContent=files.length;
-  if(!files.length){empty.style.display='';list.innerHTML='';list.appendChild(empty);return;}
-  empty.style.display='none';
-  list.innerHTML=files.map(f=>'<div class="file-item '+(f.id===activeFileId?'active':'')+'" onclick="setActiveFile('+JSON.stringify(f.id)+')">'
-    +'<div class="file-icon"><span class="'+(f.ext==='csv'?'csv-badge':'xlsx-badge')+'">'+f.ext.toUpperCase()+'<\/span><\/div>'
-    +'<div class="file-info"><div class="file-name" title="'+esc(f.name)+'">'+esc(f.name)+'<\/div>'
-    +'<div class="file-meta">'+f.date+' · '+f.sheets.length+' sheet'+(f.sheets.length!==1?'s':'')+'<\/div><\/div>'
-    +'<button class="file-delete" onclick="deleteFile('+JSON.stringify(f.id)+',event)">'
-    +'<svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"\/><\/svg><\/button><\/div>'
-  ).join('');
+  var list=document.getElementById("file-list"),empty=document.getElementById("empty-files");
+  document.getElementById("file-count").textContent=files.length;
+  if(!files.length){empty.style.display="";list.innerHTML="";list.appendChild(empty);return;}
+  empty.style.display="none";
+  list.innerHTML=files.map(function(f){
+    return "<div class=\"file-item"+(f.id===activeFileId?" active\":" \"")+" onclick=\"setActive("+JSON.stringify(f.id)+")\">"
+      +"<div class=\"file-icon\"><span class=\""+(f.ext==="csv"?"csv-badge":"xlsx-badge")+"\">" +f.ext.toUpperCase()+"</span></div>"
+      +"<div class=\"file-info\"><div class=\"file-name\" title=\""+esc(f.name)+"\">"+esc(f.name)+"</div>"
+      +"<div class=\"file-meta\">"+f.date+" - "+f.sheets.length+" sheet"+(f.sheets.length!==1?"s":"")+"</div></div>"
+      +"<button class=\"file-delete\" onclick=\"deleteFile("+JSON.stringify(f.id)+",event)\">"
+      +"<svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6\"/></svg></button></div>";
+  }).join("");
 }
 function renderViewer(){
-  const file=files.find(f=>f.id===activeFileId);
-  const ve=document.getElementById('viewer-empty'),vc=document.getElementById('viewer-content');
-  if(!file){ve.style.display='flex';vc.style.display='none';return;}
-  ve.style.display='none';vc.style.display='flex';
-  document.getElementById('active-file-name').textContent=file.name;
-  document.getElementById('active-file-meta').textContent=file.date+' · '+file.sheets.length+' sheet'+(file.sheets.length!==1?'s':'');
+  var file=files.filter(function(f){return f.id===activeFileId;})[0];
+  var ve=document.getElementById("viewer-empty"),vc=document.getElementById("viewer-content");
+  if(!file){ve.style.display="flex";vc.style.display="none";return;}
+  ve.style.display="none";vc.style.display="flex";
+  document.getElementById("active-file-name").textContent=file.name;
+  document.getElementById("active-file-meta").textContent=file.date+" - "+file.sheets.length+" sheet"+(file.sheets.length!==1?"s":"");
   renderTabs(file);renderSheet(file,activeSheet);
 }
-function renderTabs(file){ document.getElementById('tab-bar').innerHTML=file.sheets.map((s,i)=>'<div class="sheet-tab '+(i===activeSheet?'active':'')+'" onclick="switchSheet('+i+')">'+esc(s.name)+'<\/div>').join(''); }
-function switchSheet(i){activeSheet=i;sortState={col:-1,asc:true};const file=files.find(f=>f.id===activeFileId);if(file){renderTabs(file);renderSheet(file,i);}}
-function renderSheet(file,idx){
-  const sheet=file.sheets[idx];
-  if(!sheet||!sheet.data.length){document.getElementById('stats-bar').innerHTML='<span>Empty<\/span>';document.querySelector('#data-table thead').innerHTML='';document.querySelector('#data-table tbody').innerHTML='<tr><td style="padding:18px;color:var(--text3)">No data.<\/td><\/tr>';return;}
-  const headers=sheet.data[0];
-  const allBody=sortState.col>=0?sortRows(sheet.data.slice(1),sortState.col,sortState.asc):sheet.data.slice(1);
-  const dataRows=allBody.filter(r=>r.some(c=>c!==''));
-  document.getElementById('stats-bar').innerHTML='<span class="stat-chip"><span class="val">'+dataRows.length.toLocaleString()+'<\/span> rows<\/span><span class="stat-chip"><span class="val">'+headers.length+'<\/span> cols<\/span>';
-  document.querySelector('#data-table thead').innerHTML='<tr>'+headers.map((h,i)=>{const arr=sortState.col===i?(sortState.asc?' ▲':' ▼'):' ⇅';return'<th onclick="sortByCol('+i+')">'+esc(String(h))+'<span class="sort-arrow">'+arr+'<\/span><\/th>'}).join('')+'<\/tr>';
-  const MAX=2000;document.querySelector('#data-table tbody').innerHTML=allBody.slice(0,MAX).map(row=>'<tr>'+headers.map((h,ci)=>'<td>'+fmtCell(String(h),row[ci]??'')+'<\/td>').join('')+'<\/tr>').join('')+(allBody.length>MAX?'<tr><td colspan="'+headers.length+'" style="text-align:center;color:var(--text3);padding:10px;font-size:10px;">Showing first '+MAX+' of '+allBody.length.toLocaleString()+' rows<\/td><\/tr>':'');
+function renderTabs(file){
+  document.getElementById("tab-bar").innerHTML=file.sheets.map(function(s,i){return "<div class=\"sheet-tab"+(i===activeSheet?" active\":" \"")+" onclick=\"switchSheet("+i+")\">"+esc(s.name)+"</div>";}).join("");
 }
-function sortByCol(col){sortState=sortState.col===col?{col,asc:!sortState.asc}:{col,asc:true};const file=files.find(f=>f.id===activeFileId);if(file)renderSheet(file,activeSheet);}
-function sortRows(rows,col,asc){return[...rows].sort((a,b)=>{const av=a[col]??'',bv=b[col]??'';const an=parseFloat(String(av).replace(/[$,%]/g,'')),bn=parseFloat(String(bv).replace(/[$,%]/g,''));const cmp=(!isNaN(an)&&!isNaN(bn))?an-bn:String(av).localeCompare(String(bv));return asc?cmp:-cmp;});}
+function switchSheet(i){activeSheet=i;sortState={col:-1,asc:true};var file=files.filter(function(f){return f.id===activeFileId;})[0];if(file){renderTabs(file);renderSheet(file,i);}}
+function renderSheet(file,idx){
+  var sheet=file.sheets[idx];
+  if(!sheet||!sheet.data.length){document.getElementById("stats-bar").innerHTML="<span>Empty</span>";document.querySelector("#data-table thead").innerHTML="";document.querySelector("#data-table tbody").innerHTML="<tr><td style=\"padding:18px;color:var(--text3)\">No data.</td></tr>";return;}
+  var headers=sheet.data[0];
+  var allBody=sortState.col>=0?sortRows(sheet.data.slice(1),sortState.col,sortState.asc):sheet.data.slice(1);
+  var dr=allBody.filter(function(r){return r.some(function(c){return c!=="";});});
+  document.getElementById("stats-bar").innerHTML="<span class=\"stat-chip\"><span class=\"val\">"+dr.length.toLocaleString()+"</span> rows</span><span class=\"stat-chip\"><span class=\"val\">"+headers.length+"</span> cols</span>";
+  document.querySelector("#data-table thead").innerHTML="<tr>"+headers.map(function(h,i){var arr=sortState.col===i?(sortState.asc?" ^":" v"):" ~";return"<th onclick=\"sortByCol("+i+")\">"+esc(String(h))+"<span class=\"sort-arrow\">"+arr+"</span></th>";}).join("")+"</tr>";
+  var MAX=2000;
+  document.querySelector("#data-table tbody").innerHTML=allBody.slice(0,MAX).map(function(row){return"<tr>"+headers.map(function(h,ci){return"<td>"+fmtCell(String(h),row[ci]!==undefined?row[ci]:"")+"</td>";}).join("")+"</tr>";}).join("")+(allBody.length>MAX?"<tr><td colspan=\""+headers.length+"\" style=\"text-align:center;color:var(--text3);padding:10px;font-size:10px\">Showing first "+MAX+" of "+allBody.length.toLocaleString()+" rows</td></tr>":"");
+}
+function sortByCol(col){sortState=sortState.col===col?{col:col,asc:!sortState.asc}:{col:col,asc:true};var file=files.filter(function(f){return f.id===activeFileId;})[0];if(file)renderSheet(file,activeSheet);}
+function sortRows(rows,col,asc){return rows.slice().sort(function(a,b){var av=a[col]!==undefined?a[col]:"",bv=b[col]!==undefined?b[col]:"";var an=parseFloat(String(av).replace(/[$,%]/g,"")),bn=parseFloat(String(bv).replace(/[$,%]/g,""));var cmp=(!isNaN(an)&&!isNaN(bn))?an-bn:String(av).localeCompare(String(bv));return asc?cmp:-cmp;});}
 function fmtCell(header,val){
-  if(val===''||val==null)return'<span style="color:var(--text3)">—<\/span>';
-  const str=String(val),h=header.toLowerCase();
-  const num=parseFloat(str.replace(/[$,%\s]/g,''));
-  const ENTITIES=['Bros','Enterprise','WHS','SAE','MH1','MH2','MH3','MH5'];
-  const ent=ENTITIES.find(e=>str.trim().toUpperCase()===e.toUpperCase());
-  if(ent)return'<span class="cell-entity entity-'+ent+'">'+esc(str)+'<\/span>';
-  if(/[$]/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)){if(!isNaN(num))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtC2(num)+'<\/span>';}
-  if(/rate|percent|%/.test(h)||str.includes('%'))return'<span class="cell-pct">'+esc(str)+'<\/span>';
-  if(!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtC2(num)+'<\/span>';
+  if(val===""||val===null||val===undefined) return "<span style=\"color:var(--text3)\">-</span>";
+  var str=String(val),h=header.toLowerCase(),num=parseFloat(str.replace(/[$,%\s]/g,""));
+  var ENTS=["Bros","Enterprise","Ent","WHS","SAE","MH1","MH2","MH3","MH5"];
+  var ent=ENTS.filter(function(e){return str.trim().toUpperCase()===e.toUpperCase();})[0];
+  if(ent) return "<span class=\"cell-entity entity-"+ent+"\">"+esc(str)+"</span>";
+  if(/[$]/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)){if(!isNaN(num)) return "<span class=\""+(num<0?"cell-negative":"cell-dollar")+"\">"+fmt2(num)+"</span>";}
+  if(/rate|percent|%/.test(h)||str.indexOf("%")>=0) return "<span class=\"cell-pct\">"+esc(str)+"</span>";
+  if(!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h)) return "<span class=\""+(num<0?"cell-negative":"cell-dollar")+"\">"+fmt2(num)+"</span>";
   return esc(str);
 }
 function exportCSV(){
-  const file=files.find(f=>f.id===activeFileId);if(!file)return;const sheet=file.sheets[activeSheet];if(!sheet)return;
-  const csv=sheet.data.map(row=>row.map(c=>{const s=String(c??'');return(s.includes(',')||s.includes('"'))?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=file.name.replace(/\.[^.]+$/,'')+'_sheet.csv';a.click();showToast('CSV exported');
+  var file=files.filter(function(f){return f.id===activeFileId;})[0];if(!file)return;
+  var sheet=file.sheets[activeSheet];if(!sheet)return;
+  var csv=sheet.data.map(function(row){return row.map(function(c){var s=String(c!==undefined?c:"");return(s.indexOf(",")>=0||s.indexOf("\"")>=0)?"\""+s.replace(/\"/g,"\"\"")+"\"":s;}).join(",");}).join("\n");
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=file.name.replace(/\.[^.]+$/,"")+"_export.csv";a.click();showToast("CSV exported");
 }
-function fmtFull(n){return(n<0?'-$':'$')+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function fmtC2(n){const abs=Math.abs(n);const s=abs>=1e6?'$'+(abs/1e6).toFixed(2)+'M':'$'+abs.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return(n<0?'-':'')+s;}
-function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(t._timer);t._timer=setTimeout(()=>t.className='',2600);}
+function fmt(n){return(n<0?"-$":"$")+Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt2(n){var abs=Math.abs(n);var s=abs>=1e6?"$"+(abs/1e6).toFixed(2)+"M":"$"+abs.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});return(n<0?"-":"")+s;}
+function esc(str){return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function showToast(msg,type){var t=document.getElementById("toast");t.textContent=msg;t.className="show"+(type?" "+type:"");clearTimeout(t._timer);t._timer=setTimeout(function(){t.className="";},2600);}
 </script>
 </body>
 </html>
