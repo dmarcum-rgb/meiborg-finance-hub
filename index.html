@@ -508,23 +508,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 </div>
 
 <div id="toast"></div>
+
 <script>
-// ═══════════════════════════════════════
-// LOAN DATA — ORGANIZED BY CATEGORY
-// ═══════════════════════════════════════
 const CATEGORIES = [
-  {
-    id:'mortgage', label:'Real Estate / Mortgage', type:'cat-mortgage',
-    color:'#c084fc', dotColor:'#c084fc',
-    groups:[
-      { lender:'Wintrust', badge:'badge-wintrust', loans:[
-        { entity:'Bros', desc:'SBA Mortgage — 1122 Milford Rd', balance:1574131.66, rate:3.61, maturity:'2046-04', contact:'Sinead Murphy' }
-      ]}
-    ]
+  { id:'mortgage', label:'Real Estate / Mortgage', type:'cat-mortgage', color:'#c084fc', dotColor:'#c084fc',
+    groups:[{ lender:'Wintrust', badge:'badge-wintrust', loans:[
+      { entity:'Bros', desc:'SBA Mortgage — 1122 Milford Rd', balance:1574131.66, rate:3.61, maturity:'2046-04', contact:'Sinead Murphy' }
+    ]}]
   },
-  {
-    id:'equipment', label:'Equipment / Trucks', type:'cat-equipment',
-    color:'#38bdf8', dotColor:'#38bdf8',
+  { id:'equipment', label:'Equipment / Trucks', type:'cat-equipment', color:'#38bdf8', dotColor:'#38bdf8',
     groups:[
       { lender:'BMO', badge:'badge-bmo', loans:[
         { entity:'Bros', desc:'2019 Kenworth T680', balance:8901.59, rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
@@ -560,304 +552,181 @@ const CATEGORIES = [
       ]}
     ]
   },
-  {
-    id:'trailer', label:'Trailer / Dry Van / Reefer', type:'cat-trailer',
-    color:'#34d399', dotColor:'#34d399',
-    groups:[
-      { lender:'Webster', badge:'badge-webster', loans:[
-        { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
-        { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
-        { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
-        { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
-        { entity:'Bros', desc:'2022 Utility 4000DX 53ft Flatbed', balance:35064.62, rate:5.50, maturity:'2027-10', contact:'Michael Weinberger' },
-        { entity:'Bros', desc:'2023 Utility 4000DX 53ft Flatbed', balance:41250.00, rate:6.25, maturity:'2028-12', contact:'Michael Weinberger' }
-      ]}
-    ]
+  { id:'trailer', label:'Trailer / Dry Van / Reefer', type:'cat-trailer', color:'#34d399', dotColor:'#34d399',
+    groups:[{ lender:'Webster', badge:'badge-webster', loans:[
+      { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
+      { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
+      { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
+      { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
+      { entity:'Bros', desc:'2022 Utility 4000DX 53ft Flatbed', balance:35064.62, rate:5.50, maturity:'2027-10', contact:'Michael Weinberger' },
+      { entity:'Bros', desc:'2023 Utility 4000DX 53ft Flatbed', balance:41250.00, rate:6.25, maturity:'2028-12', contact:'Michael Weinberger' }
+    ]}]
   },
-  {
-    id:'receivable', label:'Notes Receivable (Assets)', type:'cat-receivable',
-    color:'#a78bfa', dotColor:'#a78bfa', isAsset:true,
-    groups:[
-      { lender:'Internal', badge:'badge-nr', loans:[
-        { entity:'Various', desc:'Owner-Operator Lease-Purchase Program (31+ operators)', balance:null, rate:null, maturity:null, weekly:'$307–$997/wk' },
-        { entity:'External', desc:'Rockford Brake Manufacturing — Promissory Note', balance:100000, rate:null, maturity:null }
-      ]}
-    ]
+  { id:'receivable', label:'Notes Receivable (Assets)', type:'cat-receivable', color:'#a78bfa', dotColor:'#a78bfa', isAsset:true,
+    groups:[{ lender:'Internal', badge:'badge-nr', loans:[
+      { entity:'Various', desc:'Owner-Operator Lease-Purchase (31+ operators)', balance:null, rate:null, maturity:null, weekly:'$307–$997/wk' },
+      { entity:'External', desc:'Rockford Brake Manufacturing — Promissory Note', balance:100000, rate:null, maturity:null }
+    ]}]
   }
 ];
 
-// ═══════════════════════════════════════
-// LENDER FILTER CONFIG
-// ═══════════════════════════════════════
 const LENDER_CHIPS = [
-  { id:'All', label:'All', cls:'', lenders:['Wintrust','BMO','Webster','Paccar','Internal'] },
+  { id:'All', label:'All Lenders', cls:'', lenders:['Wintrust','BMO','Webster','Paccar','Internal'] },
   { id:'Wintrust', label:'Wintrust', cls:'chip-wintrust', lenders:['Wintrust'] },
   { id:'BMO', label:'BMO', cls:'chip-bmo', lenders:['BMO'] },
   { id:'Webster', label:'Webster', cls:'chip-webster', lenders:['Webster'] },
   { id:'Paccar', label:'Paccar', cls:'chip-paccar', lenders:['Paccar'] },
-  { id:'NR', label:'Notes Recv.', cls:'chip-nr', lenders:['Internal'] },
+  { id:'NR', label:'Notes Recv.', cls:'chip-nr', lenders:['Internal'] }
 ];
 
-// ═══════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════
-let files = [], activeFileId = null, activeSheet = 0, sortState = {col:-1,asc:true};
-let activeLender = 'All';
-let openCategories = new Set(['mortgage','equipment','trailer']);
-let openLenderGroups = new Set();
-let currentView = 'dashboard';
-const STORAGE = 'mfh_files_v4';
+let files=[], activeFileId=null, activeSheet=0, sortState={col:-1,asc:true};
+let activeLender='All', openCategories=new Set(['mortgage','equipment','trailer']), openLenderGroups=new Set(), currentView='dashboard';
+const STORAGE='mfh_files_v4';
 
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
-  loadFiles();
-  setupDrop();
+  loadFiles(); setupDrop();
   document.getElementById('file-input').addEventListener('change', e => handleFiles(e.target.files));
+  // Event delegation for dashboard interactions
+  document.getElementById('loan-scroll').addEventListener('click', e => {
+    const catHdr = e.target.closest('.loan-cat-header');
+    if (catHdr) { const catEl = catHdr.closest('.loan-category'); if (catEl) toggleCat(catEl.dataset.catId); return; }
+    const lgHdr = e.target.closest('.lender-group-header');
+    if (lgHdr) { const lgEl = lgHdr.closest('.lender-group'); if (lgEl) toggleLG(lgEl.dataset.lgId); return; }
+  });
+  document.getElementById('lender-strip').addEventListener('click', e => {
+    const chip = e.target.closest('.ls-chip');
+    if (chip && chip.dataset.lenderId) setLender(chip.dataset.lenderId);
+  });
+  document.getElementById('nav-dashboard').addEventListener('click', () => switchView('dashboard'));
+  document.getElementById('nav-raw').addEventListener('click', () => switchView('raw'));
   renderDashboard();
 });
 
-// ═══════════════════════════════════════
-// VIEW SWITCHING
-// ═══════════════════════════════════════
 function switchView(v) {
-  currentView = v;
-  document.getElementById('view-dashboard').style.display = v === 'dashboard' ? 'flex' : 'none';
-  document.getElementById('view-raw').style.display = v === 'raw' ? 'flex' : 'none';
-  document.getElementById('nav-dashboard').className = 'nav-pill' + (v === 'dashboard' ? ' active' : '');
-  document.getElementById('nav-raw').className = 'nav-pill' + (v === 'raw' ? ' active' : '');
+  currentView=v;
+  document.getElementById('view-dashboard').style.display = v==='dashboard'?'flex':'none';
+  document.getElementById('view-raw').style.display = v==='raw'?'flex':'none';
+  document.getElementById('nav-dashboard').className = 'nav-pill'+(v==='dashboard'?' active':'');
+  document.getElementById('nav-raw').className = 'nav-pill'+(v==='raw'?' active':'');
 }
 
-// ═══════════════════════════════════════
-// MATURITY HELPERS
-// ═══════════════════════════════════════
-function monthsDiff(m) {
-  if (!m) return Infinity;
-  const [y,mo] = m.split('-').map(Number);
-  return (y-2026)*12+(mo-1);
-}
-function matCls(m) {
-  const d = monthsDiff(m);
-  if (d===Infinity) return 'mat-long';
-  if (d<=12) return 'mat-urgent';
-  if (d<=24) return 'mat-warn';
-  if (d<=60) return 'mat-ok';
-  return 'mat-long';
-}
+function monthsDiff(m) { if(!m) return Infinity; const [y,mo]=m.split('-').map(Number); return (y-2026)*12+(mo-1); }
+function matCls(m) { const d=monthsDiff(m); if(d===Infinity) return 'mat-long'; if(d<=12) return 'mat-urgent'; if(d<=24) return 'mat-warn'; if(d<=60) return 'mat-ok'; return 'mat-long'; }
 function fmtMat(m) {
-  if (!m) return '<span class="mat-long">—</span>';
-  const [y,mo] = m.split('-');
-  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const flag = matCls(m)==='mat-urgent' ? ' ⚑' : '';
-  return '<span class="'+matCls(m)+'">'+mon[parseInt(mo,10)-1]+' '+y+flag+'</span>';
+  if(!m) return '<span class="mat-long">—</span>';
+  const [y,mo]=m.split('-'); const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const flag=matCls(m)==='mat-urgent'?' ⚑':'';
+  return '<span class="'+matCls(m)+'">'+mon[parseInt(mo,10)-1]+' '+y+flag+'<\/span>';
 }
 function findNextMat() {
-  let best = null;
-  CATEGORIES.forEach(cat => {
-    if (cat.isAsset) return;
-    cat.groups.forEach(g => g.loans.forEach(l => {
-      if (l.maturity) {
-        const d = monthsDiff(l.maturity);
-        if (d>=0 && (best===null || d<monthsDiff(best))) best=l.maturity;
-      }
-    }));
-  });
+  let best=null;
+  CATEGORIES.forEach(cat => { if(cat.isAsset) return; cat.groups.forEach(g => g.loans.forEach(l => { if(l.maturity){const d=monthsDiff(l.maturity);if(d>=0&&(best===null||d<monthsDiff(best)))best=l.maturity;} })); });
   return best;
 }
+function getAllLoans() { const loans=[]; CATEGORIES.forEach(cat => { if(!cat.isAsset) cat.groups.forEach(g => g.loans.forEach(l => loans.push(l))); }); return loans; }
 
-// ═══════════════════════════════════════
-// DASHBOARD RENDER
-// ═══════════════════════════════════════
-function renderDashboard() {
-  renderKPIs();
-  renderLenderStrip();
-  renderLoanCategories();
-  renderFooter();
-}
-
-function getAllLoans() {
-  const loans = [];
-  CATEGORIES.forEach(cat => {
-    if (!cat.isAsset) cat.groups.forEach(g => g.loans.forEach(l => loans.push(l)));
-  });
-  return loans;
-}
+function renderDashboard() { renderKPIs(); renderLenderStrip(); renderLoanCategories(); renderFooter(); }
 
 function renderKPIs() {
-  const loans = getAllLoans();
-  const total = loans.reduce((s,l) => s+l.balance, 0);
-  const avgRate = loans.reduce((s,l) => s+l.rate, 0)/loans.length;
-  const nextMat = findNextMat();
-  const [ny,nm] = nextMat.split('-');
-  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-  document.getElementById('kpi-total').textContent = fmtFull(total);
-  document.getElementById('kpi-count').textContent = loans.length;
-  document.getElementById('kpi-rate').textContent = avgRate.toFixed(2)+'%';
-  document.getElementById('kpi-maturity').textContent = mon[parseInt(nm,10)-1]+' '+ny;
-  document.getElementById('kpi-maturity').className = 'kpi-value red';
+  const loans=getAllLoans(), total=loans.reduce((s,l)=>s+l.balance,0), avg=loans.reduce((s,l)=>s+l.rate,0)/loans.length;
+  const nm=findNextMat(), [ny,nmo]=nm.split('-'), mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('kpi-total').textContent=fmtFull(total);
+  document.getElementById('kpi-count').textContent=loans.length;
+  document.getElementById('kpi-rate').textContent=avg.toFixed(2)+'%';
+  document.getElementById('kpi-maturity').textContent=mon[parseInt(nmo,10)-1]+' '+ny;
 }
 
 function renderLenderStrip() {
-  const allLoans = getAllLoans();
-  const counts = {All: allLoans.length};
-  LENDER_CHIPS.slice(1).forEach(chip => {
-    counts[chip.id] = 0;
-    CATEGORIES.forEach(cat => {
-      cat.groups.forEach(g => {
-        if (chip.lenders.includes(g.lender)) counts[chip.id] += g.loans.length;
-      });
-    });
-  });
-
-  document.getElementById('lender-strip').innerHTML = LENDER_CHIPS.map(chip => {
-    const isActive = activeLender === chip.id;
-    const cls = chip.id === 'All'
-      ? ('ls-chip' + (isActive ? ' all-active' : ''))
-      : ('ls-chip ' + chip.cls + (isActive ? ' active' : ''));
-    return '<div class="'+cls+'" onclick="setLender(''+chip.id+'')">'+(chip.id==='All'?'All Lenders':chip.label)+'<span class="lc">'+counts[chip.id]+'</span></div>';
+  const allLoans=getAllLoans(), counts={All:allLoans.length};
+  LENDER_CHIPS.slice(1).forEach(chip=>{counts[chip.id]=0;CATEGORIES.forEach(cat=>cat.groups.forEach(g=>{if(chip.lenders.includes(g.lender))counts[chip.id]+=g.loans.length;}));});
+  document.getElementById('lender-strip').innerHTML=LENDER_CHIPS.map(chip=>{
+    const isAct=activeLender===chip.id;
+    const cls=chip.id==='All'?('ls-chip'+(isAct?' all-active':'')):('ls-chip '+chip.cls+(isAct?' active':''));
+    return '<div class="'+cls+'" data-lender-id="'+chip.id+'">'+chip.label+'<span class="lc">'+counts[chip.id]+'<\/span><\/div>';
   }).join('');
 }
 
-function setLender(id) {
-  activeLender = id;
-  renderLenderStrip();
-  renderLoanCategories();
-}
-
-function toggleCat(id) {
-  if (openCategories.has(id)) openCategories.delete(id);
-  else openCategories.add(id);
-  renderLoanCategories();
-}
-
-function toggleLG(id) {
-  if (openLenderGroups.has(id)) openLenderGroups.delete(id);
-  else openLenderGroups.add(id);
-  renderLoanCategories();
-}
+function setLender(id) { activeLender=id; renderLenderStrip(); renderLoanCategories(); }
+function toggleCat(id) { if(openCategories.has(id)) openCategories.delete(id); else openCategories.add(id); renderLoanCategories(); }
+function toggleLG(id) { if(openLenderGroups.has(id)) openLenderGroups.delete(id); else openLenderGroups.add(id); renderLoanCategories(); }
 
 function renderLoanCategories() {
-  const scroll = document.getElementById('loan-scroll');
-  let html = '';
-
-  const activeLenders = LENDER_CHIPS.find(c=>c.id===activeLender)?.lenders || [];
+  const scroll=document.getElementById('loan-scroll');
+  const activeLenders=LENDER_CHIPS.find(c=>c.id===activeLender)?.lenders||[];
+  let html='';
 
   CATEGORIES.forEach(cat => {
-    // Filter groups by active lender
-    const groups = activeLender === 'All' ? cat.groups
-      : cat.groups.filter(g => activeLenders.includes(g.lender));
-    if (!groups.length) return;
+    const groups=activeLender==='All'?cat.groups:cat.groups.filter(g=>activeLenders.includes(g.lender));
+    if(!groups.length) return;
+    const catLoans=groups.flatMap(g=>g.loans);
+    const catTotal=catLoans.filter(l=>l.balance).reduce((s,l)=>s+l.balance,0);
+    const isOpen=openCategories.has(cat.id);
 
-    const catLoans = groups.flatMap(g => g.loans);
-    const catTotal = catLoans.filter(l => l.balance).reduce((s,l) => s+l.balance, 0);
-    const isOpen = openCategories.has(cat.id);
+    html+='<div class="loan-category '+(isOpen?'open ':'')+cat.type+'" data-cat-id="'+cat.id+'">';
+    html+='<div class="loan-cat-header"><div class="loan-cat-left">';
+    html+='<div class="cat-dot-lg" style="background:'+cat.dotColor+'"></div>';
+    html+='<div class="cat-label-block"><div class="cat-name">'+esc(cat.label)+'<\/div>';
+    html+='<div class="cat-meta">'+catLoans.length+' instrument'+(catLoans.length!==1?'s':'')+' across '+groups.length+' lender'+(groups.length!==1?'s':'')+'<\/div><\/div><\/div>';
+    html+='<div class="cat-right"><div class="cat-total">'+(cat.isAsset?'<span style="color:#a78bfa">ASSETS<\/span>':fmtFull(catTotal))+'<\/div>';
+    html+='<div class="cat-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"\/><\/svg><\/div><\/div><\/div>';
 
-    html += '<div class="loan-category '+(isOpen?'open':'')+' '+cat.type+'" id="cat-'+cat.id+'">';
-    html += '<div class="loan-cat-header" onclick="toggleCat(''+cat.id+'')">';
-    html += '<div class="loan-cat-left">';
-    html += '<div class="cat-dot-lg" style="background:'+cat.dotColor+';"></div>';
-    html += '<div class="cat-label-block">';
-    html += '<div class="cat-name">'+esc(cat.label)+'</div>';
-    html += '<div class="cat-meta">'+catLoans.length+' instrument'+(catLoans.length!==1?'s':'')+' across '+groups.length+' lender'+(groups.length!==1?'s':'')+'</div>';
-    html += '</div></div>';
-    html += '<div class="cat-right">';
-    html += '<div class="cat-total">'+(cat.isAsset ? '<span style="color:#a78bfa">ASSETS</span>' : fmtFull(catTotal))+'</div>';
-    html += '<div class="cat-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>';
-    html += '</div></div>';
-
-    if (isOpen) {
-      html += '<div class="loan-rows">';
-
-      if (cat.isAsset) {
-        html += '<div class="nr-banner">';
-        html += '<div class="nr-banner-title"><svg width="12" height="12" viewBox="0 0 24 24" stroke="#c4b5fd" fill="none" stroke-width="2"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8l-6.1 3.2 1.2-6.8-5-4.9 6.9-1z"/></svg>Notes Receivable — Money Owed TO Meiborg</div>';
-        html += '<div class="nr-stats">';
-        html += '<div class="nr-stat"><div class="nr-stat-label">Operators</div><div class="nr-stat-value">31+</div></div>';
-        html += '<div class="nr-stat"><div class="nr-stat-label">Weekly Range</div><div class="nr-stat-value" style="font-size:11px;">$307–$997</div></div>';
-        html += '<div class="nr-stat"><div class="nr-stat-label">Rockford Note</div><div class="nr-stat-value">$100K</div></div>';
-        html += '</div></div>';
+    if(isOpen){
+      html+='<div class="loan-rows">';
+      if(cat.isAsset){
+        html+='<div class="nr-banner"><div class="nr-banner-title">Notes Receivable — Money Owed TO Meiborg<\/div>';
+        html+='<div class="nr-stats"><div class="nr-stat"><div class="nr-stat-label">Operators<\/div><div class="nr-stat-value">31+<\/div><\/div>';
+        html+='<div class="nr-stat"><div class="nr-stat-label">Weekly Range<\/div><div class="nr-stat-value" style="font-size:11px;">$307–$997<\/div><\/div>';
+        html+='<div class="nr-stat"><div class="nr-stat-label">Rockford Note<\/div><div class="nr-stat-value">$100K<\/div><\/div><\/div><\/div>';
       }
 
       groups.forEach(g => {
-        const lgId = cat.id + '_' + g.lender;
-        const lgOpen = openLenderGroups.has(lgId);
-        const lgTotal = g.loans.filter(l=>l.balance).reduce((s,l)=>s+l.balance,0);
+        const lgId=cat.id+'_'+g.lender;
+        const lgOpen=openLenderGroups.has(lgId);
+        const lgTotal=g.loans.filter(l=>l.balance).reduce((s,l)=>s+l.balance,0);
+        html+='<div class="lender-group '+(lgOpen?'lg-open ':'')+'" data-lg-id="'+lgId+'">';
+        html+='<div class="lender-group-header"><div class="lg-left"><span class="lg-badge '+g.badge+'">'+esc(g.lender)+'<\/span>';
+        html+='<span class="lg-count">'+g.loans.length+' loan'+(g.loans.length!==1?'s':'')+'<\/span><\/div>';
+        html+='<div style="display:flex;align-items:center;gap:8px;"><div class="lg-total">'+(lgTotal?fmtFull(lgTotal):'—')+'<\/div>';
+        html+='<div class="lg-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"\/><\/svg><\/div><\/div><\/div>';
 
-        html += '<div class="lender-group '+(lgOpen?'lg-open':'')+'" id="lg-'+lgId+'">';
-        html += '<div class="lender-group-header" onclick="toggleLG(''+lgId+'')">';
-        html += '<div class="lg-left"><span class="lg-badge '+g.badge+'">'+esc(g.lender)+'</span>';
-        html += '<span class="lg-count">'+g.loans.length+' loan'+(g.loans.length!==1?'s':'')+'</span></div>';
-        html += '<div style="display:flex;align-items:center;gap:8px;">';
-        html += '<div class="lg-total">'+(lgTotal?fmtFull(lgTotal):'—')+'</div>';
-        html += '<div class="lg-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>';
-        html += '</div></div>';
-
-        if (lgOpen) {
-          html += '<div class="lender-group-rows">';
-          // Column headers
-          html += '<div style="display:grid;grid-template-columns:55px 1fr 80px 38px 55px;gap:0;padding:4px 14px 4px 30px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);">';
-          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;">Entity</div>';
-          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding-left:6px;">Description</div>';
-          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Balance</div>';
-          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:center;">Rate</div>';
-          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Matures</div>';
-          html += '</div>';
-
+        if(lgOpen){
+          html+='<div class="lender-group-rows">';
+          html+='<div style="display:grid;grid-template-columns:55px 1fr 80px 38px 55px;padding:4px 14px 4px 30px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);">';
+          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;">Entity<\/div>';
+          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding-left:6px;">Description<\/div>';
+          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Balance<\/div>';
+          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:center;">Rate<\/div>';
+          html+='<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Matures<\/div><\/div>';
           g.loans.forEach(loan => {
-            html += '<div class="loan-row">';
-            html += '<span class="lr-entity entity-'+loan.entity+'">'+esc(loan.entity)+'</span>';
-            html += '<div class="lr-desc" title="'+esc(loan.desc)+'">'+esc(loan.desc)+'</div>';
-            html += '<div class="lr-balance'+(cat.isAsset?' is-asset':'')+'">';
-            if (loan.balance) html += fmtFull(loan.balance);
-            else if (loan.weekly) html += '<span style="color:var(--gold);font-size:9.5px;">'+esc(loan.weekly)+'</span>';
-            else html += '<span style="color:var(--text3)">—</span>';
-            html += '</div>';
-            html += '<div class="lr-rate">'+(loan.rate ? loan.rate.toFixed(2)+'%' : '—')+'</div>';
-            html += '<div class="lr-maturity">'+fmtMat(loan.maturity)+'</div>';
-            html += '</div>';
+            html+='<div class="loan-row"><span class="lr-entity entity-'+loan.entity+'">'+esc(loan.entity)+'<\/span>';
+            html+='<div class="lr-desc" title="'+esc(loan.desc)+'">'+esc(loan.desc)+'<\/div>';
+            html+='<div class="lr-balance'+(cat.isAsset?' is-asset':'')+'">'+
+              (loan.balance?fmtFull(loan.balance):(loan.weekly?'<span style="color:var(--gold);font-size:9.5px;">'+esc(loan.weekly||'')+'<\/span>':'<span style="color:var(--text3)">—<\/span>'))+'<\/div>';
+            html+='<div class="lr-rate">'+(loan.rate?loan.rate.toFixed(2)+'%':'—')+'<\/div>';
+            html+='<div class="lr-maturity">'+fmtMat(loan.maturity)+'<\/div><\/div>';
           });
-
-          // Lender subtotal
-          if (lgTotal) {
-            html += '<div class="cat-subtotal">';
-            html += '<span class="cst-label">'+g.lender+' Subtotal</span>';
-            html += '<span class="cst-val" style="color:'+cat.color+'">'+fmtFull(lgTotal)+'</span>';
-            html += '</div>';
-          }
-          html += '</div>';
+          if(lgTotal){ html+='<div class="cat-subtotal"><span class="cst-label">'+g.lender+' Subtotal<\/span><span class="cst-val" style="color:'+cat.color+'">'+fmtFull(lgTotal)+'<\/span><\/div>'; }
+          html+='<\/div>';
         }
-        html += '</div>';
+        html+='<\/div>';
       });
 
-      // Category total (if not asset)
-      if (!cat.isAsset && catTotal) {
-        html += '<div class="cat-subtotal" style="background:var(--bg4);">';
-        html += '<span class="cst-label" style="font-weight:700;">Category Total</span>';
-        html += '<span class="cst-val" style="color:'+cat.color+';font-size:13px;">'+fmtFull(catTotal)+'</span>';
-        html += '</div>';
+      if(!cat.isAsset && catTotal){
+        html+='<div class="cat-subtotal" style="background:var(--bg4)"><span class="cst-label" style="font-weight:700">Category Total<\/span><span class="cst-val" style="color:'+cat.color+';font-size:13px">'+fmtFull(catTotal)+'<\/span><\/div>';
       }
-
-      html += '</div>'; // loan-rows
+      html+='<\/div>';
     }
-    html += '</div>'; // loan-category
+    html+='<\/div>';
   });
-
-  scroll.innerHTML = html;
+  scroll.innerHTML=html;
 }
 
-function renderFooter() {
-  const loans = getAllLoans();
-  const total = loans.reduce((s,l)=>s+l.balance,0);
-  const count = loans.length;
-  document.getElementById('df-total').textContent = fmtFull(total);
-  document.getElementById('df-sub').textContent = count + ' active loans across 4 lenders · 5 legal entities';
+function renderFooter(){
+  const loans=getAllLoans(), total=loans.reduce((s,l)=>s+l.balance,0);
+  document.getElementById('df-total').textContent=fmtFull(total);
+  document.getElementById('df-sub').textContent=loans.length+' active loans across 4 lenders · 5 legal entities';
 }
 
-// ═══════════════════════════════════════
-// FILE HANDLING
-// ═══════════════════════════════════════
 function setupDrop(){
   const zone=document.getElementById('drop-zone');
   zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
@@ -873,15 +742,15 @@ function handleFiles(fl){
       const sheets=parseFile(e.target.result,ext);
       if(!sheets){showToast('Could not parse '+file.name,'error');return;}
       const id=Date.now()+Math.random();
-      const entry={id,name:file.name,ext,date:new Date().toLocaleDateString(),base64:e.target.result,sheets};
-      files.unshift(entry);persistFiles();renderSidebar();setActiveFile(id);showToast('Loaded '+file.name,'success');
+      files.unshift({id,name:file.name,ext,date:new Date().toLocaleDateString(),base64:e.target.result,sheets});
+      persistFiles();renderSidebar();setActiveFile(id);showToast('Loaded '+file.name,'success');
     };
     reader.readAsDataURL(file);
   });
 }
 function parseFile(dataUrl,ext){
   try{
-    const b64=dataUrl.split(',')[1];const binary=atob(b64);const bytes=new Uint8Array(binary.length);
+    const b64=dataUrl.split(',')[1],binary=atob(b64),bytes=new Uint8Array(binary.length);
     for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
     const wb=ext==='csv'?XLSX.read(new TextDecoder().decode(bytes),{type:'string'}):XLSX.read(bytes,{type:'array'});
     return wb.SheetNames.map(name=>({name,data:XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:''})}));
@@ -889,78 +758,63 @@ function parseFile(dataUrl,ext){
 }
 function persistFiles(){try{localStorage.setItem(STORAGE,JSON.stringify(files));}catch(e){if(files.length>1){files.pop();persistFiles();}else showToast('Storage full','error');}}
 function loadFiles(){try{const raw=localStorage.getItem(STORAGE);if(raw){files=JSON.parse(raw);renderSidebar();}}catch(e){files=[];}}
-function deleteFile(id,e){e.stopPropagation();files=files.filter(f=>f.id!==id);persistFiles();if(activeFileId===id){activeFileId=null;}renderSidebar();showToast('File removed');}
+function deleteFile(id,e){e.stopPropagation();files=files.filter(f=>f.id!==id);persistFiles();if(activeFileId===id)activeFileId=null;renderSidebar();showToast('File removed');}
 function setActiveFile(id){activeFileId=id;activeSheet=0;sortState={col:-1,asc:true};renderSidebar();renderViewer();}
-
-// ═══════════════════════════════════════
-// SIDEBAR
-// ═══════════════════════════════════════
 function renderSidebar(){
-  const list=document.getElementById('file-list');
-  const empty=document.getElementById('empty-files');
+  const list=document.getElementById('file-list'),empty=document.getElementById('empty-files');
   document.getElementById('file-count').textContent=files.length;
   if(!files.length){empty.style.display='';list.innerHTML='';list.appendChild(empty);return;}
   empty.style.display='none';
   list.innerHTML=files.map(f=>'<div class="file-item '+(f.id===activeFileId?'active':'')+'" onclick="setActiveFile('+JSON.stringify(f.id)+')">'
-    +'<div class="file-icon"><span class="'+(f.ext==='csv'?'csv-badge':'xlsx-badge')+'">'+f.ext.toUpperCase()+'</span></div>'
-    +'<div class="file-info"><div class="file-name" title="'+esc(f.name)+'">'+esc(f.name)+'</div>'
-    +'<div class="file-meta">'+f.date+' · '+f.sheets.length+' sheet'+(f.sheets.length!==1?'s':'')+'</div></div>'
-    +'<button class="file-delete" onclick="deleteFile('+JSON.stringify(f.id)+',event)" title="Remove">'
-    +'<svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div>'
+    +'<div class="file-icon"><span class="'+(f.ext==='csv'?'csv-badge':'xlsx-badge')+'">'+f.ext.toUpperCase()+'<\/span><\/div>'
+    +'<div class="file-info"><div class="file-name" title="'+esc(f.name)+'">'+esc(f.name)+'<\/div>'
+    +'<div class="file-meta">'+f.date+' · '+f.sheets.length+' sheet'+(f.sheets.length!==1?'s':'')+'<\/div><\/div>'
+    +'<button class="file-delete" onclick="deleteFile('+JSON.stringify(f.id)+',event)">'
+    +'<svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"\/><\/svg><\/button><\/div>'
   ).join('');
 }
-
-// ═══════════════════════════════════════
-// VIEWER (RAW TABLE)
-// ═══════════════════════════════════════
 function renderViewer(){
   const file=files.find(f=>f.id===activeFileId);
-  const viewerEmpty=document.getElementById('viewer-empty');
-  const viewerContent=document.getElementById('viewer-content');
-  if(!file){viewerEmpty.style.display='flex';viewerContent.style.display='none';return;}
-  viewerEmpty.style.display='none';viewerContent.style.display='flex';
+  const ve=document.getElementById('viewer-empty'),vc=document.getElementById('viewer-content');
+  if(!file){ve.style.display='flex';vc.style.display='none';return;}
+  ve.style.display='none';vc.style.display='flex';
   document.getElementById('active-file-name').textContent=file.name;
   document.getElementById('active-file-meta').textContent=file.date+' · '+file.sheets.length+' sheet'+(file.sheets.length!==1?'s':'');
   renderTabs(file);renderSheet(file,activeSheet);
 }
-function renderTabs(file){
-  document.getElementById('tab-bar').innerHTML=file.sheets.map((s,i)=>'<div class="sheet-tab '+(i===activeSheet?'active':'')+'" onclick="switchSheet('+i+')">'+esc(s.name)+'</div>').join('');
-}
+function renderTabs(file){ document.getElementById('tab-bar').innerHTML=file.sheets.map((s,i)=>'<div class="sheet-tab '+(i===activeSheet?'active':'')+'" onclick="switchSheet('+i+')">'+esc(s.name)+'<\/div>').join(''); }
 function switchSheet(i){activeSheet=i;sortState={col:-1,asc:true};const file=files.find(f=>f.id===activeFileId);if(file){renderTabs(file);renderSheet(file,i);}}
 function renderSheet(file,idx){
   const sheet=file.sheets[idx];
-  if(!sheet||!sheet.data.length){document.getElementById('stats-bar').innerHTML='<span class="stat-chip">Empty sheet</span>';document.querySelector('#data-table thead').innerHTML='';document.querySelector('#data-table tbody').innerHTML='<tr><td style="padding:18px;color:var(--text3)">No data.</td></tr>';return;}
+  if(!sheet||!sheet.data.length){document.getElementById('stats-bar').innerHTML='<span>Empty<\/span>';document.querySelector('#data-table thead').innerHTML='';document.querySelector('#data-table tbody').innerHTML='<tr><td style="padding:18px;color:var(--text3)">No data.<\/td><\/tr>';return;}
   const headers=sheet.data[0];
   const allBody=sortState.col>=0?sortRows(sheet.data.slice(1),sortState.col,sortState.asc):sheet.data.slice(1);
   const dataRows=allBody.filter(r=>r.some(c=>c!==''));
-  document.getElementById('stats-bar').innerHTML='<span class="stat-chip"><span class="val">'+dataRows.length.toLocaleString()+'</span> rows</span><span class="stat-chip"><span class="val">'+headers.length+'</span> cols</span>';
-  document.querySelector('#data-table thead').innerHTML='<tr>'+headers.map((h,i)=>{const arr=sortState.col===i?(sortState.asc?' ▲':' ▼'):' ⇅';return'<th onclick="sortByCol('+i+')">'+esc(String(h))+'<span class="sort-arrow">'+arr+'</span></th>'}).join('')+'</tr>';
-  const MAX=2000;document.querySelector('#data-table tbody').innerHTML=allBody.slice(0,MAX).map(row=>'<tr>'+headers.map((h,ci)=>'<td>'+fmtCell(String(h),row[ci]??'')+'</td>').join('')+'</tr>').join('')+(allBody.length>MAX?'<tr><td colspan="'+headers.length+'" style="text-align:center;color:var(--text3);padding:10px;font-size:10px;">Showing first '+MAX+' of '+allBody.length.toLocaleString()+' rows</td></tr>':'');
+  document.getElementById('stats-bar').innerHTML='<span class="stat-chip"><span class="val">'+dataRows.length.toLocaleString()+'<\/span> rows<\/span><span class="stat-chip"><span class="val">'+headers.length+'<\/span> cols<\/span>';
+  document.querySelector('#data-table thead').innerHTML='<tr>'+headers.map((h,i)=>{const arr=sortState.col===i?(sortState.asc?' ▲':' ▼'):' ⇅';return'<th onclick="sortByCol('+i+')">'+esc(String(h))+'<span class="sort-arrow">'+arr+'<\/span><\/th>'}).join('')+'<\/tr>';
+  const MAX=2000;document.querySelector('#data-table tbody').innerHTML=allBody.slice(0,MAX).map(row=>'<tr>'+headers.map((h,ci)=>'<td>'+fmtCell(String(h),row[ci]??'')+'<\/td>').join('')+'<\/tr>').join('')+(allBody.length>MAX?'<tr><td colspan="'+headers.length+'" style="text-align:center;color:var(--text3);padding:10px;font-size:10px;">Showing first '+MAX+' of '+allBody.length.toLocaleString()+' rows<\/td><\/tr>':'');
 }
 function sortByCol(col){sortState=sortState.col===col?{col,asc:!sortState.asc}:{col,asc:true};const file=files.find(f=>f.id===activeFileId);if(file)renderSheet(file,activeSheet);}
 function sortRows(rows,col,asc){return[...rows].sort((a,b)=>{const av=a[col]??'',bv=b[col]??'';const an=parseFloat(String(av).replace(/[$,%]/g,'')),bn=parseFloat(String(bv).replace(/[$,%]/g,''));const cmp=(!isNaN(an)&&!isNaN(bn))?an-bn:String(av).localeCompare(String(bv));return asc?cmp:-cmp;});}
 function fmtCell(header,val){
-  if(val===''||val==null)return'<span style="color:var(--text3)">—</span>';
-  const str=String(val);const h=header.toLowerCase();const num=parseFloat(str.replace(/[$,%\s]/g,''));
+  if(val===''||val==null)return'<span style="color:var(--text3)">—<\/span>';
+  const str=String(val),h=header.toLowerCase();
+  const num=parseFloat(str.replace(/[$,%\s]/g,''));
   const ENTITIES=['Bros','Enterprise','WHS','SAE','MH1','MH2','MH3','MH5'];
   const ent=ENTITIES.find(e=>str.trim().toUpperCase()===e.toUpperCase());
-  if(ent)return'<span class="cell-entity entity-'+ent+'">'+esc(str)+'</span>';
-  if(/\$/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)){if(!isNaN(num))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtCell2(num)+'</span>';}
-  if(/rate|percent|%/.test(h)||str.includes('%'))return'<span class="cell-pct">'+esc(str)+'</span>';
-  if(!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtCell2(num)+'</span>';
+  if(ent)return'<span class="cell-entity entity-'+ent+'">'+esc(str)+'<\/span>';
+  if(/[$]/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)){if(!isNaN(num))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtC2(num)+'<\/span>';}
+  if(/rate|percent|%/.test(h)||str.includes('%'))return'<span class="cell-pct">'+esc(str)+'<\/span>';
+  if(!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtC2(num)+'<\/span>';
   return esc(str);
 }
 function exportCSV(){
   const file=files.find(f=>f.id===activeFileId);if(!file)return;const sheet=file.sheets[activeSheet];if(!sheet)return;
-  const csv=sheet.data.map(row=>row.map(c=>{const s=String(c??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=file.name.replace(/\.[^.]+$/,'')+'_'+file.sheets[activeSheet].name+'.csv';a.click();showToast('CSV exported');
+  const csv=sheet.data.map(row=>row.map(c=>{const s=String(c??'');return(s.includes(',')||s.includes('"'))?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=file.name.replace(/\.[^.]+$/,'')+'_sheet.csv';a.click();showToast('CSV exported');
 }
-
-// ═══════════════════════════════════════
-// UTILITIES
-// ═══════════════════════════════════════
 function fmtFull(n){return(n<0?'-$':'$')+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function fmtCell2(n){const abs=Math.abs(n);const s=abs>=1e6?'$'+(abs/1e6).toFixed(2)+'M':'$'+abs.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return(n<0?'-':'')+s;}
+function fmtC2(n){const abs=Math.abs(n);const s=abs>=1e6?'$'+(abs/1e6).toFixed(2)+'M':'$'+abs.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return(n<0?'-':'')+s;}
 function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(t._timer);t._timer=setTimeout(()=>t.className='',2600);}
 </script>
