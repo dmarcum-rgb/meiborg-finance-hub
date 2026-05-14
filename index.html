@@ -3,98 +3,94 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meiborg Finance Hub — Debt Schedule Intelligence</title>
+<title>Meiborg Finance Hub</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Barlow:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #07090f;
-  --bg2:      #0d1117;
-  --bg3:      #111620;
-  --bg4:      #161d2a;
-  --bg5:      #1a2235;
-  --panel:    #0f1523;
-  --border:   #1e2d45;
-  --border2:  #243352;
-  --gold:     #c9a84c;
-  --gold2:    #e8c96d;
-  --gold-dim: rgba(201,168,76,0.10);
-  --gold-glow:rgba(201,168,76,0.05);
-  --text:     #e8edf5;
-  --text2:    #8fa3c0;
-  --text3:    #4d6280;
-  --green:    #22c55e;
-  --red:      #f43f5e;
-  --blue:     #38bdf8;
-  --purple:   #a78bfa;
-  --orange:   #fb923c;
-  --cyan:     #22d3ee;
-  --teal:     #2dd4bf;
-  --sidebar-w:240px;
-  --radius:   6px;
-  --radius-lg:10px;
+--bg: #07090f;
+--bg2: #0d1117;
+--bg3: #111620;
+--bg4: #161d2a;
+--bg5: #1a2235;
+--panel: #0f1523;
+--border: #1e2d45;
+--border2: #243352;
+--gold: #c9a84c;
+--gold2: #e8c96d;
+--gold-dim: rgba(201,168,76,0.10);
+--gold-glow:rgba(201,168,76,0.05);
+--text: #e8edf5;
+--text2: #8fa3c0;
+--text3: #4d6280;
+--green: #22c55e;
+--red: #f43f5e;
+--blue: #38bdf8;
+--purple: #a78bfa;
+--orange: #fb923c;
+--cyan: #22d3ee;
+--teal: #2dd4bf;
+--sidebar-w:260px;
+--radius: 6px;
+--radius-lg:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;display:flex;flex-direction:column;}
 
-::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3);}
 
-/* ── TOP NAV BAR ── */
 #topbar{
-  height:48px;min-height:48px;
-  background:var(--bg2);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 20px;
-  flex-shrink:0;
-  position:relative;
-  z-index:100;
+height:48px;min-height:48px;
+background:var(--bg2);
+border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;
+padding:0 24px;
+flex-shrink:0;
+position:relative;
+z-index:100;
 }
 .topbar-left{display:flex;align-items:center;gap:14px;}
 .logo{
-  font-family:'Barlow',sans-serif;font-weight:700;font-size:15px;
-  color:var(--gold2);letter-spacing:0.5px;
-  display:flex;align-items:center;gap:9px;
+font-family:'Barlow',sans-serif;font-weight:700;font-size:15px;
+color:var(--gold2);letter-spacing:0.5px;
+display:flex;align-items:center;gap:9px;
 }
 .logo-mark{
-  width:28px;height:28px;background:var(--gold);border-radius:5px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+width:28px;height:28px;background:var(--gold);border-radius:5px;
+display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .logo-mark svg{width:16px;height:16px;fill:#07090f;}
 .logo-sub{font-size:9px;font-weight:400;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
 .topbar-divider{width:1px;height:20px;background:var(--border);}
 .topbar-meta{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:0.5px;}
 .topbar-meta span{color:var(--text2);}
-
 .topbar-right{display:flex;align-items:center;gap:10px;}
 .nav-pill{
-  padding:4px 11px;border-radius:4px;font-size:11px;font-weight:500;
-  color:var(--text3);cursor:pointer;transition:all 0.15s;
-  border:1px solid transparent;
+padding:4px 14px;border-radius:4px;font-size:11px;font-weight:500;
+color:var(--text3);cursor:pointer;transition:all 0.15s;
+border:1px solid transparent;
 }
 .nav-pill:hover{color:var(--text2);background:var(--bg3);}
 .nav-pill.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(201,168,76,0.2);}
 
-/* ── LAYOUT ── */
 #shell{display:flex;flex:1;min-height:0;overflow:hidden;}
 
-/* ── LEFT SIDEBAR ── */
+/* SIDEBAR (only shown in raw data view) */
 #sidebar{
-  width:var(--sidebar-w);min-width:var(--sidebar-w);
-  background:var(--bg2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
+width:var(--sidebar-w);min-width:var(--sidebar-w);
+background:var(--bg2);border-right:1px solid var(--border);
+display:flex;flex-direction:column;overflow:hidden;
 }
 .sb-section{padding:10px 10px 6px;border-bottom:1px solid var(--border);}
 .sb-label{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;padding:0 2px;}
-
 #drop-zone{
-  border:1.5px dashed var(--border2);border-radius:var(--radius);
-  padding:12px 8px;text-align:center;cursor:pointer;
-  transition:all 0.2s;background:var(--gold-glow);position:relative;
+border:1.5px dashed var(--border2);border-radius:var(--radius);
+padding:12px 8px;text-align:center;cursor:pointer;
+transition:all 0.2s;background:var(--gold-glow);position:relative;
 }
 #drop-zone:hover,#drop-zone.drag-over{border-color:var(--gold);background:var(--gold-dim);}
 #drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
@@ -104,17 +100,16 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .dz-text{font-size:10.5px;color:var(--text2);line-height:1.4;}
 .dz-text strong{color:var(--gold);font-weight:500;}
 .dz-hint{font-size:9.5px;color:var(--text3);margin-top:2px;}
-
 .sb-files-header{
-  padding:7px 12px 5px;display:flex;align-items:center;justify-content:space-between;
-  font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;
+padding:7px 12px 5px;display:flex;align-items:center;justify-content:space-between;
+font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;
 }
 .sb-badge{background:var(--bg4);color:var(--text3);font-size:9px;padding:1px 5px;border-radius:8px;}
 #file-list{flex:1;overflow-y:auto;padding:3px 6px 8px;}
 .file-item{
-  display:flex;align-items:center;gap:7px;padding:7px 8px;
-  border-radius:var(--radius);cursor:pointer;transition:all 0.12s;
-  border:1px solid transparent;margin-bottom:1px;position:relative;
+display:flex;align-items:center;gap:7px;padding:7px 8px;
+border-radius:var(--radius);cursor:pointer;transition:all 0.12s;
+border:1px solid transparent;margin-bottom:1px;position:relative;
 }
 .file-item:hover{background:var(--bg3);border-color:var(--border);}
 .file-item.active{background:var(--gold-dim);border-color:rgba(201,168,76,0.25);}
@@ -131,18 +126,15 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .file-delete svg{width:11px;height:11px;stroke:currentColor;fill:none;}
 .empty-files{text-align:center;padding:20px 8px;color:var(--text3);font-size:11px;line-height:1.6;}
 
-/* ── MAIN PANEL ── */
+/* MAIN PANEL (raw data) */
 #main{
-  flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;
+flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;
 }
-
-/* Viewer states */
 .center-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px;text-align:center;}
 .state-icon{width:50px;height:50px;background:var(--bg3);border-radius:11px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);}
 .state-icon svg{width:22px;height:22px;stroke:var(--gold);fill:none;opacity:0.6;}
 .state-title{font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:var(--text2);}
 .state-sub{font-size:11px;color:var(--text3);max-width:240px;line-height:1.6;}
-
 .main-header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;min-height:48px;background:var(--bg2);flex-shrink:0;}
 .main-title{font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;color:var(--text);}
 .main-meta{font-size:9.5px;color:var(--text3);margin-top:1px;font-family:'IBM Plex Mono',monospace;}
@@ -152,17 +144,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .btn svg{width:11px;height:11px;stroke:currentColor;fill:none;}
 .btn-gold{background:var(--gold-dim);border-color:rgba(201,168,76,0.25);color:var(--gold);}
 .btn-gold:hover{background:rgba(201,168,76,0.18);}
-
 #tab-bar{display:flex;padding:0 16px;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 #tab-bar::-webkit-scrollbar{display:none;}
 .sheet-tab{padding:7px 12px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.13s;user-select:none;}
 .sheet-tab:hover{color:var(--text2);}
 .sheet-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
-
 #stats-bar{padding:6px 16px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--border);background:var(--bg2);font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;flex-wrap:wrap;flex-shrink:0;}
 .stat-chip{display:flex;align-items:center;gap:3px;}
 .stat-chip .val{color:var(--gold);font-weight:500;}
-
 #table-container{flex:1;overflow:auto;}
 #data-table{width:100%;border-collapse:collapse;font-size:11px;font-family:'IBM Plex Mono',monospace;min-width:400px;}
 #data-table thead th{position:sticky;top:0;z-index:10;background:var(--bg3);padding:8px 11px;text-align:left;font-size:9.5px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border2);white-space:nowrap;cursor:pointer;user-select:none;transition:background 0.1s;}
@@ -177,659 +166,752 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-
 .cell-pct{color:var(--blue);}
 .cell-entity{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;display:inline-block;}
 
-/* ── DASHBOARD PANEL ── */
+/* LOAN PORTFOLIO - full screen panel */
 #dashboard{
-  width:480px;min-width:480px;
-  background:var(--bg2);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;overflow:hidden;
+flex:1;
+background:var(--bg2);
+display:flex;flex-direction:column;overflow:hidden;
 }
 
-/* ── DASH HEADER ── */
-.dash-header{
-  padding:12px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.dash-title{
-  font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;color:var(--text);
-  display:flex;align-items:center;gap:8px;
-}
-.dash-icon{width:22px;height:22px;background:var(--gold-dim);border-radius:5px;display:flex;align-items:center;justify-content:center;}
-.dash-icon svg{width:12px;height:12px;stroke:var(--gold);fill:none;}
-.dash-sub{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:1px;}
-
-/* ── KPI GRID ── */
+/* KPI GRID */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border-bottom:1px solid var(--border);background:var(--border);flex-shrink:0;}
 .kpi-card{
-  background:var(--bg2);padding:10px 12px;
-  display:flex;flex-direction:column;gap:2px;
+background:var(--bg2);padding:14px 20px;
+display:flex;flex-direction:column;gap:3px;
 }
-.kpi-label{font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;}
-.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:var(--gold);line-height:1.1;}
+.kpi-label{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--gold);line-height:1.1;}
 .kpi-value.blue{color:var(--blue);}
 .kpi-value.red{color:var(--red);}
 .kpi-value.green{color:var(--green);}
-.kpi-sub{font-size:8.5px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
+.kpi-sub{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
 
-/* ── CATEGORY TOGGLE BAR ── */
-.cat-bar{
-  display:flex;align-items:center;gap:0;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;overflow-x:auto;scrollbar-width:none;
-}
-.cat-bar::-webkit-scrollbar{display:none;}
-.cat-tab{
-  padding:8px 13px;font-size:10.5px;font-weight:600;cursor:pointer;
-  white-space:nowrap;transition:all 0.13s;user-select:none;
-  color:var(--text3);border-bottom:2px solid transparent;
-  display:flex;align-items:center;gap:5px;
-  position:relative;
-}
-.cat-tab:hover{color:var(--text2);background:var(--bg3);}
-.cat-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--gold-glow);}
-.cat-tab .cat-count{font-size:8.5px;font-weight:700;padding:1px 4px;border-radius:6px;background:rgba(0,0,0,0.25);}
-.cat-tab .cat-dot{width:6px;height:6px;border-radius:50%;}
-
-/* ── LOAN CATEGORY SECTION ── */
-#loan-scroll{flex:1;overflow-y:auto;padding:0;}
-
-/* Category dropdown section */
-.loan-category{border-bottom:1px solid var(--border);overflow:hidden;}
-.loan-cat-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;cursor:pointer;transition:background 0.13s;
-  user-select:none;background:var(--bg3);
-}
-.loan-cat-header:hover{background:var(--bg4);}
-.loan-cat-left{display:flex;align-items:center;gap:9px;}
-.cat-label-block{display:flex;flex-direction:column;gap:2px;}
-.cat-name{font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
-.cat-meta{font-size:9.5px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
-.cat-right{display:flex;align-items:center;gap:10px;}
-.cat-total{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;}
-.cat-chevron{transition:transform 0.2s;color:var(--text3);}
-.cat-chevron svg{width:13px;height:13px;stroke:currentColor;fill:none;}
-.loan-category.open .cat-chevron{transform:rotate(180deg);}
-
-/* Category type colors */
-.cat-mortgage .cat-name{color:#c084fc;}
-.cat-mortgage .cat-total{color:#c084fc;}
-.cat-mortgage .cat-dot-lg{background:#c084fc;}
-
-.cat-equipment .cat-name{color:#38bdf8;}
-.cat-equipment .cat-total{color:#38bdf8;}
-.cat-equipment .cat-dot-lg{background:#38bdf8;}
-
-.cat-trailer .cat-name{color:#34d399;}
-.cat-trailer .cat-total{color:#34d399;}
-.cat-trailer .cat-dot-lg{background:#34d399;}
-
-.cat-receivable .cat-name{color:#a78bfa;}
-.cat-receivable .cat-total{color:#a78bfa;}
-.cat-receivable .cat-dot-lg{background:#a78bfa;}
-
-.cat-dot-lg{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
-
-/* Loan rows inside dropdown */
-.loan-rows{display:none;}
-.loan-category.open .loan-rows{display:block;}
-
-/* Lender sub-group */
-.lender-group{border-top:1px solid var(--border);}
-.lender-group-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:7px 14px 7px 22px;background:var(--bg2);
-  cursor:pointer;transition:background 0.12s;user-select:none;
-}
-.lender-group-header:hover{background:var(--bg3);}
-.lg-left{display:flex;align-items:center;gap:7px;}
-.lg-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
-.badge-wintrust{background:rgba(99,102,241,0.15);color:#a5b4fc;}
-.badge-bmo{background:rgba(244,63,94,0.12);color:#fb7185;}
-.badge-webster{background:rgba(34,197,94,0.12);color:#4ade80;}
-.badge-paccar{background:rgba(251,146,60,0.12);color:#fdba74;}
-.badge-nr{background:rgba(167,139,250,0.12);color:#c4b5fd;}
-.lg-count{font-size:9.5px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
-.lg-total{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text2);}
-.lg-chevron{transition:transform 0.15s;color:var(--text3);}
-.lg-chevron svg{width:11px;height:11px;stroke:currentColor;fill:none;}
-.lender-group.lg-open .lg-chevron{transform:rotate(180deg);}
-.lender-group-rows{display:none;}
-.lender-group.lg-open .lender-group-rows{display:block;}
-
-/* Individual loan row */
-.loan-row{
-  display:grid;
-  grid-template-columns:55px 1fr 80px 38px 55px;
-  gap:0;
-  padding:6px 14px 6px 30px;
-  border-top:1px solid rgba(30,45,69,0.4);
-  transition:background 0.1s;align-items:center;
-}
-.loan-row:hover{background:var(--gold-glow);}
-.lr-entity{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;display:inline-block;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
-.entity-Bros{background:rgba(139,92,246,0.12);color:#a78bfa;}
-.entity-Enterprise{background:rgba(56,189,248,0.12);color:#7dd3fc;}
-.entity-WHS{background:rgba(34,197,94,0.12);color:#4ade80;}
-.entity-SAE{background:rgba(251,191,36,0.12);color:#fcd34d;}
-.entity-MH1{background:rgba(236,72,153,0.1);color:#f472b6;}
-.entity-MH2{background:rgba(236,72,153,0.12);color:#f472b6;}
-.entity-MH3{background:rgba(236,72,153,0.14);color:#f472b6;}
-.entity-MH5{background:rgba(236,72,153,0.16);color:#f472b6;}
-.lr-desc{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px;}
-.lr-balance{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;color:var(--green);text-align:right;white-space:nowrap;}
-.lr-balance.is-asset{color:var(--blue);}
-.lr-rate{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--blue);text-align:center;}
-.lr-maturity{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-align:right;white-space:nowrap;}
-.mat-urgent{color:var(--red);font-weight:600;}
-.mat-warn{color:var(--gold);}
-.mat-ok{color:var(--text2);}
-.mat-long{color:var(--text3);}
-
-/* Category footer total */
-.cat-subtotal{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 14px 6px 22px;background:var(--bg3);
-  border-top:1px solid var(--border2);
-}
-.cst-label{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;}
-.cst-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;}
-
-/* Grand total footer */
-.dash-footer{
-  border-top:1px solid var(--border2);background:var(--bg3);
-  padding:10px 14px;flex-shrink:0;
-}
-.df-row{display:flex;align-items:center;justify-content:space-between;}
-.df-label{font-family:'Barlow',sans-serif;font-size:11.5px;font-weight:700;color:var(--text2);}
-.df-amount{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:700;color:var(--gold);}
-.df-sub{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:3px;}
-
-/* Notes Receivable special */
-.nr-banner{
-  padding:10px 14px;background:rgba(167,139,250,0.06);border-bottom:1px solid var(--border);
-}
-.nr-banner-title{font-size:10px;font-weight:700;color:#c4b5fd;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-.nr-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
-.nr-stat{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);border-radius:var(--radius);padding:6px 8px;}
-.nr-stat-label{font-size:8.5px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;}
-.nr-stat-value{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:#c4b5fd;}
-
-/* Toast */
-#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 14px;font-size:11.5px;color:var(--text);opacity:0;transition:all 0.22s;z-index:9999;pointer-events:none;white-space:nowrap;}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-#toast.success{border-color:rgba(34,197,94,0.4);color:var(--green);}
-#toast.error{border-color:rgba(244,63,94,0.4);color:var(--red);}
-
-/* Lender filter strip above */
-.lender-strip{display:flex;align-items:center;gap:6px;padding:7px 14px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;flex-wrap:wrap;}
+/* LENDER FILTER STRIP */
+.lender-strip{display:flex;align-items:center;gap:8px;padding:10px 20px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;flex-wrap:wrap;}
 .lender-strip::-webkit-scrollbar{display:none;}
 .ls-chip{
-  padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;cursor:pointer;
-  transition:all 0.13s;white-space:nowrap;border:1px solid var(--border2);
-  background:transparent;color:var(--text3);display:flex;align-items:center;gap:4px;
+padding:4px 12px;border-radius:14px;font-size:10.5px;font-weight:600;cursor:pointer;
+transition:all 0.13s;white-space:nowrap;border:1px solid var(--border2);
+background:transparent;color:var(--text3);display:flex;align-items:center;gap:5px;
 }
 .ls-chip:hover{color:var(--text2);background:var(--bg3);}
 .ls-chip.active{color:#0d1117;border-color:transparent;font-weight:700;}
 .ls-chip.all-active{background:var(--bg4);border-color:var(--border2);color:var(--text);}
-.ls-chip .lc{font-size:8px;font-weight:700;padding:1px 4px;border-radius:5px;background:rgba(0,0,0,0.2);}
+.ls-chip .lc{font-size:8px;font-weight:700;padding:1px 5px;border-radius:5px;background:rgba(0,0,0,0.2);}
 .chip-wintrust.active{background:#6366f1;}
 .chip-bmo.active{background:#f43f5e;}
 .chip-webster.active{background:#22c55e;}
 .chip-paccar.active{background:#fb923c;}
 .chip-nr.active{background:#a78bfa;}
 
-.col-hdr{display:grid;grid-template-columns:55px 1fr 80px 38px 55px;padding:4px 14px 4px 30px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);}
-.col-hdr span{font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;}
+/* LOAN CATEGORIES */
+#loan-scroll{flex:1;overflow-y:auto;padding:0;}
+
+.loan-category{border-bottom:1px solid var(--border);overflow:hidden;}
+.loan-cat-header{
+display:flex;align-items:center;justify-content:space-between;
+padding:14px 20px;cursor:pointer;transition:background 0.13s;
+user-select:none;background:var(--bg3);
+}
+.loan-cat-header:hover{background:var(--bg4);}
+.loan-cat-left{display:flex;align-items:center;gap:10px;}
+.cat-label-block{display:flex;flex-direction:column;gap:2px;}
+.cat-name{font-family:'Barlow',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.cat-meta{font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
+.cat-right{display:flex;align-items:center;gap:12px;}
+.cat-total{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;}
+.cat-chevron{transition:transform 0.2s;color:var(--text3);}
+.cat-chevron svg{width:15px;height:15px;stroke:currentColor;fill:none;}
+.loan-category.open .cat-chevron{transform:rotate(180deg);}
+
+.cat-mortgage .cat-name{color:#c084fc;}
+.cat-mortgage .cat-total{color:#c084fc;}
+.cat-mortgage .cat-dot-lg{background:#c084fc;}
+.cat-equipment .cat-name{color:#38bdf8;}
+.cat-equipment .cat-total{color:#38bdf8;}
+.cat-equipment .cat-dot-lg{background:#38bdf8;}
+.cat-trailer .cat-name{color:#34d399;}
+.cat-trailer .cat-total{color:#34d399;}
+.cat-trailer .cat-dot-lg{background:#34d399;}
+.cat-receivable .cat-name{color:#a78bfa;}
+.cat-receivable .cat-total{color:#a78bfa;}
+.cat-receivable .cat-dot-lg{background:#a78bfa;}
+.cat-dot-lg{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+.loan-rows{display:none;}
+.loan-category.open .loan-rows{display:block;}
+
+/* LENDER SUB-GROUP */
+.lender-group{border-top:1px solid var(--border);}
+.lender-group-header{
+display:flex;align-items:center;justify-content:space-between;
+padding:9px 20px 9px 32px;background:var(--bg2);
+cursor:pointer;transition:background 0.12s;user-select:none;
+}
+.lender-group-header:hover{background:var(--bg3);}
+.lg-left{display:flex;align-items:center;gap:8px;}
+.lg-badge{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:3px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.badge-wintrust{background:rgba(99,102,241,0.15);color:#a5b4fc;}
+.badge-bmo{background:rgba(244,63,94,0.12);color:#fb7185;}
+.badge-webster{background:rgba(34,197,94,0.12);color:#4ade80;}
+.badge-paccar{background:rgba(251,146,60,0.12);color:#fdba74;}
+.badge-nr{background:rgba(167,139,250,0.12);color:#c4b5fd;}
+.lg-count{font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
+.lg-total{font-family:'IBM Plex Mono',monospace;font-size:12.5px;font-weight:600;color:var(--text2);}
+.lg-chevron{transition:transform 0.15s;color:var(--text3);}
+.lg-chevron svg{width:12px;height:12px;stroke:currentColor;fill:none;}
+.lender-group.lg-open .lg-chevron{transform:rotate(180deg);}
+.lender-group-rows{display:none;}
+.lender-group.lg-open .lender-group-rows{display:block;}
+
+/* INDIVIDUAL LOAN ROW - wider columns for full-screen */
+.loan-row{
+display:grid;
+grid-template-columns:70px 1fr 110px 50px 70px;
+gap:0;
+padding:7px 20px 7px 40px;
+border-top:1px solid rgba(30,45,69,0.4);
+transition:background 0.1s;align-items:center;
+}
+.loan-row:hover{background:var(--gold-glow);}
+.lr-entity{font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:3px;display:inline-block;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.entity-Bros{background:rgba(139,92,246,0.12);color:#a78bfa;}
+.entity-Enterprise{background:rgba(56,189,248,0.12);color:#7dd3fc;}
+.entity-Ent{background:rgba(56,189,248,0.12);color:#7dd3fc;}
+.entity-WHS{background:rgba(34,197,94,0.12);color:#4ade80;}
+.entity-SAE{background:rgba(251,191,36,0.12);color:#fcd34d;}
+.entity-MH1{background:rgba(236,72,153,0.1);color:#f472b6;}
+.entity-MH2{background:rgba(236,72,153,0.12);color:#f472b6;}
+.entity-MH3{background:rgba(236,72,153,0.14);color:#f472b6;}
+.entity-MH5{background:rgba(236,72,153,0.16);color:#f472b6;}
+.entity-Various{background:rgba(167,139,250,0.12);color:#c4b5fd;}
+.entity-External{background:rgba(34,211,238,0.12);color:#67e8f9;}
+.lr-desc{font-size:11px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+.lr-balance{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--green);text-align:right;white-space:nowrap;}
+.lr-balance.is-asset{color:var(--blue);}
+.lr-rate{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--blue);text-align:center;}
+.lr-maturity{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-align:right;white-space:nowrap;}
+.mat-urgent{color:var(--red);font-weight:600;}
+.mat-warn{color:var(--gold);}
+.mat-ok{color:var(--text2);}
+.mat-long{color:var(--text3);}
+
+.cat-subtotal{
+display:flex;align-items:center;justify-content:space-between;
+padding:7px 20px 7px 32px;background:var(--bg3);
+border-top:1px solid var(--border2);
+}
+.cst-label{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;}
+.cst-val{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;}
+
+/* GRAND TOTAL FOOTER */
+.dash-footer{
+border-top:2px solid var(--border2);background:var(--bg3);
+padding:12px 20px;flex-shrink:0;
+display:flex;align-items:center;justify-content:space-between;
+}
+.df-label{font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:var(--text2);}
+.df-amount{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--gold);}
+.df-sub{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+
+/* NOTES RECEIVABLE */
+.nr-banner{
+padding:12px 20px;background:rgba(167,139,250,0.06);border-bottom:1px solid var(--border);
+}
+.nr-banner-title{font-size:10.5px;font-weight:700;color:#c4b5fd;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.nr-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.nr-stat{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);border-radius:var(--radius);padding:8px 10px;}
+.nr-stat-label{font-size:8.5px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;}
+.nr-stat-value{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:#c4b5fd;}
+
+.col-hdr{display:grid;grid-template-columns:70px 1fr 110px 50px 70px;padding:5px 20px 5px 40px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);}
+.col-hdr span{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;}
 .col-hdr span:nth-child(3){text-align:right;}
 .col-hdr span:nth-child(4){text-align:center;}
 .col-hdr span:nth-child(5){text-align:right;}
-.entity-Ent{background:rgba(56,189,248,0.12);color:#7dd3fc;}
+
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 14px;font-size:11.5px;color:var(--text);opacity:0;transition:all 0.22s;z-index:9999;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.success{border-color:rgba(34,197,94,0.4);color:var(--green);}
+#toast.error{border-color:rgba(244,63,94,0.4);color:var(--red);}
 </style>
 </head>
 <body>
-<!-- TOP NAV -->
 <header id="topbar">
-  <div class="topbar-left">
-    <div class="logo">
-      <div class="logo-mark"><svg viewBox="0 0 16 16"><path d="M2 12L8 2l6 10H2z"/><rect x="4" y="9" width="8" height="1.5" rx="0.5"/></svg></div>
-      <div><div>Meiborg Finance Hub</div><div class="logo-sub">Debt Schedule Intelligence</div></div>
-    </div>
-    <div class="topbar-divider"></div>
-    <div class="topbar-meta">As of <span>Jan 31, 2026</span> &nbsp;·&nbsp; Meiborg Bros. Inc</div>
-  </div>
-  <div class="topbar-right">
-    <div class="nav-pill active" id="nav-dashboard" onclick="switchView('dashboard')">Dashboard</div>
-    <div class="nav-pill" id="nav-raw" onclick="switchView('raw')">Raw Data</div>
-  </div>
+<div class="topbar-left">
+<div class="logo">
+<div class="logo-mark"><svg viewBox="0 0 16 16"><path d="M2 12L8 2l6 10H2z"/><rect x="4" y="9" width="8" height="1.5" rx="0.5"/></svg></div>
+<div><div>Meiborg Finance Hub</div><div class="logo-sub">Debt Schedule Intelligence</div></div>
+</div>
+<div class="topbar-divider"></div>
+<div class="topbar-meta">As of <span>Jan 31, 2026</span> &nbsp;&middot;&nbsp; Meiborg Bros. Inc</div>
+</div>
+<div class="topbar-right">
+<div class="nav-pill active" id="nav-dashboard">Dashboard</div>
+<div class="nav-pill" id="nav-raw">Raw Data</div>
+</div>
 </header>
 
 <div id="shell">
-<!-- LEFT SIDEBAR -->
-<aside id="sidebar">
-  <div class="sb-section">
-    <div class="sb-label">Upload Schedule</div>
-    <div id="drop-zone">
-      <input type="file" id="file-input" accept=".xlsx,.xls,.csv" multiple>
-      <div class="dz-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
-      <div class="dz-text"><strong>Drop files here</strong><br>or click to browse</div>
-      <div class="dz-hint">.xlsx · .xls · .csv</div>
-    </div>
-  </div>
-  <div class="sb-files-header">Files <span class="sb-badge" id="file-count">0</span></div>
-  <div id="file-list">
-    <div class="empty-files" id="empty-files">No files uploaded.<br>Drop a debt schedule above.</div>
-  </div>
+
+<!-- DASHBOARD VIEW: full width loan portfolio -->
+<div id="view-dashboard" style="display:flex;flex:1;min-height:0;overflow:hidden;">
+<aside id="dashboard">
+
+<!-- KPI ROW -->
+<div class="kpi-grid">
+<div class="kpi-card">
+<div class="kpi-label">Total Debt</div>
+<div class="kpi-value" id="kpi-total"></div>
+<div class="kpi-sub">outstanding</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">Instruments</div>
+<div class="kpi-value blue" id="kpi-count"></div>
+<div class="kpi-sub">active loans</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">Avg Rate</div>
+<div class="kpi-value" id="kpi-rate"></div>
+<div class="kpi-sub">weighted avg</div>
+</div>
+<div class="kpi-card">
+<div class="kpi-label">Next Maturity</div>
+<div class="kpi-value red" id="kpi-maturity" style="font-size:16px;"></div>
+<div class="kpi-sub">earliest due</div>
+</div>
+</div>
+
+<!-- LENDER FILTER STRIP -->
+<div class="lender-strip" id="lender-strip"></div>
+
+<!-- LOAN CATEGORIES -->
+<div id="loan-scroll"></div>
+
+<!-- FOOTER -->
+<div class="dash-footer">
+<div>
+<div class="df-label">Grand Total Outstanding</div>
+<div class="df-sub" id="df-sub"></div>
+</div>
+<div class="df-amount" id="df-total"></div>
+</div>
+
 </aside>
+</div>
 
-<!-- MAIN CONTENT -->
-<main id="main">
-  <!-- DASHBOARD VIEW -->
-  <div id="view-dashboard" style="display:flex;flex:1;min-height:0;overflow:hidden;">
-    <!-- Empty state (center) -->
-    <div id="viewer-empty" class="center-state" style="flex:1;">
-      <div class="state-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
-      <div class="state-title">Debt Schedule Dashboard</div>
-      <div class="state-sub">Upload a file to populate the dashboard, or browse the built-in loan index on the right.</div>
-    </div>
-
-    <!-- Raw table viewer (shown when file active) -->
-    <div id="viewer-content" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-      <div class="main-header">
-        <div>
-          <div class="main-title" id="active-file-name">—</div>
-          <div class="main-meta" id="active-file-meta"></div>
-        </div>
-        <div class="header-actions">
-          <button class="btn btn-gold" onclick="exportCSV()">
-            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export CSV
-          </button>
-        </div>
-      </div>
-      <div id="tab-bar"></div>
-      <div id="stats-bar"></div>
-      <div id="table-container"><table id="data-table"><thead></thead><tbody></tbody></table></div>
-    </div>
-
-    <!-- DASHBOARD PANEL (right side) -->
-    <aside id="dashboard">
-      <div class="dash-header">
-        <div>
-          <div class="dash-title">
-            <div class="dash-icon"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 3h18v18H3z M3 9h18 M3 15h18 M9 3v18 M15 3v18"/></svg></div>
-            Loan Portfolio
-          </div>
-          <div class="dash-sub" id="dash-sub-line">Meiborg Bros Inc · 35 instruments</div>
-        </div>
-      </div>
-
-      <!-- KPI Row -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Total Debt</div>
-          <div class="kpi-value" id="kpi-total"></div>
-          <div class="kpi-sub">outstanding</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Instruments</div>
-          <div class="kpi-value blue" id="kpi-count"></div>
-          <div class="kpi-sub">active loans</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Avg Rate</div>
-          <div class="kpi-value" id="kpi-rate"></div>
-          <div class="kpi-sub">weighted avg</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Next Maturity</div>
-          <div class="kpi-value red" id="kpi-maturity" style="font-size:12px;"></div>
-          <div class="kpi-sub">earliest due</div>
-        </div>
-      </div>
-
-      <!-- Lender filter strip -->
-      <div class="lender-strip" id="lender-strip"></div>
-
-      <!-- Loan Categories scrollable area -->
-      <div id="loan-scroll" style="flex:1;overflow-y:auto;"></div>
-
-      <!-- Footer total -->
-      <div class="dash-footer">
-        <div class="df-row">
-          <div class="df-label">Grand Total Outstanding</div>
-          <div class="df-amount" id="df-total"></div>
-        </div>
-        <div class="df-sub" id="df-sub"></div>
-      </div>
-    </aside>
-  </div>
-
-  <!-- RAW DATA VIEW -->
-  <div id="view-raw" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-    <div class="center-state">
-      <div class="state-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div class="state-title">Raw Data Viewer</div>
-      <div class="state-sub">Upload a debt schedule file and it will appear here for detailed review.</div>
-    </div>
-  </div>
+<!-- RAW DATA VIEW: sidebar + main panel -->
+<div id="view-raw" style="display:none;flex:1;min-height:0;overflow:hidden;">
+<aside id="sidebar">
+<div class="sb-section">
+<div class="sb-label">Upload Schedule</div>
+<div id="drop-zone">
+<input type="file" id="file-input" accept=".xlsx,.xls,.csv" multiple>
+<div class="dz-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+<div class="dz-text"><strong>Drop files here</strong><br>or click to browse</div>
+<div class="dz-hint">.xlsx &middot; .xls &middot; .csv</div>
+</div>
+</div>
+<div class="sb-files-header">Files <span class="sb-badge" id="file-count">0</span></div>
+<div id="file-list">
+<div class="empty-files" id="empty-files">No files uploaded.<br>Drop a debt schedule above.</div>
+</div>
+</aside>
+<main id="main" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+<div id="viewer-empty" class="center-state">
+<div class="state-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+<div class="state-title">Raw Data Viewer</div>
+<div class="state-sub">Upload a debt schedule file to view the raw data here.</div>
+</div>
+<div id="viewer-content" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+<div class="main-header">
+<div>
+<div class="main-title" id="active-file-name">-</div>
+<div class="main-meta" id="active-file-meta"></div>
+</div>
+<div class="header-actions">
+<button class="btn btn-gold" id="btn-export">
+<svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export CSV
+</button>
+</div>
+</div>
+<div id="tab-bar"></div>
+<div id="stats-bar"></div>
+<div id="table-container"><table id="data-table"><thead></thead><tbody></tbody></table></div>
+</div>
 </main>
 </div>
 
+</div>
+
 <div id="toast"></div>
-
-
 <script>
 var CATS = [
-  {id:"mortgage",label:"Real Estate / Mortgage",cls:"cat-mortgage",color:"#c084fc",dot:"#c084fc",
-    groups:[{lender:"Wintrust",badge:"badge-wintrust",loans:[
-      {en:"Bros",desc:"SBA Mortgage - 1122 Milford Rd",bal:1574131.66,rate:3.61,mat:"2046-04",con:"Sinead Murphy"}
-    ]}]
-  },
-  {id:"equipment",label:"Equipment / Trucks",cls:"cat-equipment",color:"#38bdf8",dot:"#38bdf8",
-    groups:[
-      {lender:"BMO",badge:"badge-bmo",loans:[
-        {en:"Bros",desc:"2019 Kenworth T680",bal:8901.59,rate:5.24,mat:"2025-03",con:"Tony Hagen"},
-        {en:"Bros",desc:"2019 Kenworth T680",bal:8901.59,rate:5.24,mat:"2025-03",con:"Tony Hagen"},
-        {en:"Bros",desc:"2020 Kenworth T680",bal:15664.29,rate:4.49,mat:"2025-09",con:"Tony Hagen"},
-        {en:"Bros",desc:"2020 Kenworth T680",bal:13355.81,rate:4.49,mat:"2025-06",con:"Tony Hagen"},
-        {en:"Bros",desc:"2021 Kenworth T680",bal:29268.47,rate:3.99,mat:"2026-06",con:"Tony Hagen"},
-        {en:"Bros",desc:"2021 Kenworth T680",bal:29268.47,rate:3.99,mat:"2026-06",con:"Tony Hagen"},
-        {en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05",con:"Tony Hagen"},
-        {en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05",con:"Tony Hagen"},
-        {en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05",con:"Tony Hagen"},
-        {en:"Bros",desc:"2023 Kenworth W990",bal:108686.49,rate:6.35,mat:"2028-10",con:"Tony Hagen"}
-      ]},
-      {lender:"Paccar",badge:"badge-paccar",loans:[
-        {en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05",con:"Jerry Brown"},
-        {en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05",con:"Jerry Brown"},
-        {en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05",con:"Jerry Brown"},
-        {en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
-        {en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
-        {en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
-        {en:"MH1",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
-        {en:"MH1",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03",con:"Jerry Brown"},
-        {en:"MH2",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
-        {en:"MH2",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
-        {en:"MH3",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
-        {en:"MH3",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06",con:"Jerry Brown"},
-        {en:"MH5",desc:"2023 Kenworth W990",bal:84512.67,rate:5.49,mat:"2028-09",con:"Jerry Brown"},
-        {en:"MH5",desc:"2023 Kenworth W990",bal:84512.67,rate:5.49,mat:"2028-09",con:"Jerry Brown"},
-        {en:"SAE",desc:"2024 Kenworth T680",bal:98744.22,rate:5.99,mat:"2029-04",con:"Jerry Brown"},
-        {en:"SAE",desc:"2024 Kenworth T680",bal:98744.22,rate:5.99,mat:"2029-04",con:"Jerry Brown"},
-        {en:"WHS",desc:"2024 Kenworth W990",bal:112388.55,rate:6.25,mat:"2029-07",con:"Jerry Brown"},
-        {en:"WHS",desc:"2024 Kenworth W990",bal:112388.55,rate:6.25,mat:"2029-07",con:"Jerry Brown"}
-      ]}
-    ]
-  },
-  {id:"trailer",label:"Trailer / Dry Van / Reefer",cls:"cat-trailer",color:"#34d399",dot:"#34d399",
-    groups:[{lender:"Webster",badge:"badge-webster",loans:[
-      {en:"Bros",desc:"2022 Utility 3000R 53ft Reefer",bal:28611.87,rate:5.35,mat:"2027-08",con:"M. Weinberger"},
-      {en:"Bros",desc:"2022 Utility 3000R 53ft Reefer",bal:28611.87,rate:5.35,mat:"2027-08",con:"M. Weinberger"},
-      {en:"Ent",desc:"2021 Hyundai Translead 53ft Dry Van",bal:19014.59,rate:3.85,mat:"2026-11",con:"M. Weinberger"},
-      {en:"Ent",desc:"2021 Hyundai Translead 53ft Dry Van",bal:19014.59,rate:3.85,mat:"2026-11",con:"M. Weinberger"},
-      {en:"Bros",desc:"2022 Utility 4000DX 53ft Flatbed",bal:35064.62,rate:5.50,mat:"2027-10",con:"M. Weinberger"},
-      {en:"Bros",desc:"2023 Utility 4000DX 53ft Flatbed",bal:41250.00,rate:6.25,mat:"2028-12",con:"M. Weinberger"}
-    ]}]
-  },
-  {id:"receivable",label:"Notes Receivable (Assets)",cls:"cat-receivable",color:"#a78bfa",dot:"#a78bfa",isAsset:true,
-    groups:[{lender:"Internal",badge:"badge-nr",loans:[
-      {en:"Various",desc:"Owner-Operator Lease-Purchase (31+ operators)",bal:null,rate:null,mat:null,weekly:"$307-$997/wk"},
-      {en:"External",desc:"Rockford Brake Mfg - Promissory Note",bal:100000,rate:null,mat:null}
-    ]}]
-  }
+{id:"mortgage",label:"Real Estate / Mortgage",cls:"cat-mortgage",color:"#c084fc",dot:"#c084fc",
+groups:[{lender:"Wintrust",badge:"badge-wintrust",loans:[
+{en:"Bros",desc:"SBA Mortgage - 1122 Milford Rd",bal:1574131.66,rate:3.61,mat:"2046-04"}
+]}]
+},
+{id:"equipment",label:"Equipment / Trucks",cls:"cat-equipment",color:"#38bdf8",dot:"#38bdf8",
+groups:[
+{lender:"BMO",badge:"badge-bmo",loans:[
+{en:"Bros",desc:"2019 Kenworth T680",bal:8901.59,rate:5.24,mat:"2025-03"},
+{en:"Bros",desc:"2019 Kenworth T680",bal:8901.59,rate:5.24,mat:"2025-03"},
+{en:"Bros",desc:"2020 Kenworth T680",bal:15664.29,rate:4.49,mat:"2025-09"},
+{en:"Bros",desc:"2020 Kenworth T680",bal:13355.81,rate:4.49,mat:"2025-06"},
+{en:"Bros",desc:"2021 Kenworth T680",bal:29268.47,rate:3.99,mat:"2026-06"},
+{en:"Bros",desc:"2021 Kenworth T680",bal:29268.47,rate:3.99,mat:"2026-06"},
+{en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05"},
+{en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05"},
+{en:"Bros",desc:"2022 Kenworth W990",bal:64498.79,rate:4.00,mat:"2027-05"},
+{en:"Bros",desc:"2023 Kenworth W990",bal:108686.49,rate:6.35,mat:"2028-10"}
+]},
+{lender:"Paccar",badge:"badge-paccar",loans:[
+{en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05"},
+{en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05"},
+{en:"Bros",desc:"2021 Kenworth T680",bal:38214.32,rate:2.99,mat:"2026-05"},
+{en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03"},
+{en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03"},
+{en:"Bros",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03"},
+{en:"MH1",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03"},
+{en:"MH1",desc:"2022 Kenworth T680",bal:52318.44,rate:3.49,mat:"2027-03"},
+{en:"MH2",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06"},
+{en:"MH2",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06"},
+{en:"MH3",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06"},
+{en:"MH3",desc:"2023 Kenworth T680",bal:71445.18,rate:4.99,mat:"2028-06"},
+{en:"MH5",desc:"2023 Kenworth W990",bal:84512.67,rate:5.49,mat:"2028-09"},
+{en:"MH5",desc:"2023 Kenworth W990",bal:84512.67,rate:5.49,mat:"2028-09"},
+{en:"SAE",desc:"2024 Kenworth T680",bal:98744.22,rate:5.99,mat:"2029-04"},
+{en:"SAE",desc:"2024 Kenworth T680",bal:98744.22,rate:5.99,mat:"2029-04"},
+{en:"WHS",desc:"2024 Kenworth W990",bal:112388.55,rate:6.25,mat:"2029-07"},
+{en:"WHS",desc:"2024 Kenworth W990",bal:112388.55,rate:6.25,mat:"2029-07"}
+]}
+]
+},
+{id:"trailer",label:"Trailer / Dry Van / Reefer",cls:"cat-trailer",color:"#34d399",dot:"#34d399",
+groups:[{lender:"Webster",badge:"badge-webster",loans:[
+{en:"Bros",desc:"2022 Utility 3000R 53ft Reefer",bal:28611.87,rate:5.35,mat:"2027-08"},
+{en:"Bros",desc:"2022 Utility 3000R 53ft Reefer",bal:28611.87,rate:5.35,mat:"2027-08"},
+{en:"Ent",desc:"2021 Hyundai Translead 53ft Dry Van",bal:19014.59,rate:3.85,mat:"2026-11"},
+{en:"Ent",desc:"2021 Hyundai Translead 53ft Dry Van",bal:19014.59,rate:3.85,mat:"2026-11"},
+{en:"Bros",desc:"2022 Utility 4000DX 53ft Flatbed",bal:35064.62,rate:5.50,mat:"2027-10"},
+{en:"Bros",desc:"2023 Utility 4000DX 53ft Flatbed",bal:41250.00,rate:6.25,mat:"2028-12"}
+]}]
+},
+{id:"receivable",label:"Notes Receivable (Assets)",cls:"cat-receivable",color:"#a78bfa",dot:"#a78bfa",isAsset:true,
+groups:[{lender:"Internal",badge:"badge-nr",loans:[
+{en:"Various",desc:"Owner-Operator Lease-Purchase (31+ operators)",bal:null,rate:null,mat:null,weekly:"$307-$997/wk"},
+{en:"External",desc:"Rockford Brake Mfg - Promissory Note",bal:100000,rate:null,mat:null}
+]}]
+}
 ];
 
 var LCHIPS = [
-  {id:"All",label:"All Lenders",cls:"",lenders:["Wintrust","BMO","Webster","Paccar","Internal"]},
-  {id:"Wintrust",label:"Wintrust",cls:"chip-wintrust",lenders:["Wintrust"]},
-  {id:"BMO",label:"BMO",cls:"chip-bmo",lenders:["BMO"]},
-  {id:"Webster",label:"Webster",cls:"chip-webster",lenders:["Webster"]},
-  {id:"Paccar",label:"Paccar",cls:"chip-paccar",lenders:["Paccar"]},
-  {id:"NR",label:"Notes Recv.",cls:"chip-nr",lenders:["Internal"]}
+{id:"All",label:"All Lenders",cls:"",lenders:["Wintrust","BMO","Webster","Paccar","Internal"]},
+{id:"Wintrust",label:"Wintrust",cls:"chip-wintrust",lenders:["Wintrust"]},
+{id:"BMO",label:"BMO",cls:"chip-bmo",lenders:["BMO"]},
+{id:"Webster",label:"Webster",cls:"chip-webster",lenders:["Webster"]},
+{id:"Paccar",label:"Paccar",cls:"chip-paccar",lenders:["Paccar"]},
+{id:"NR",label:"Notes Recv.",cls:"chip-nr",lenders:["Internal"]}
 ];
 
-var files=[], activeFileId=null, activeSheet=0, sortState={col:-1,asc:true};
-var activeLender="All", openCats={"mortgage":1,"equipment":1,"trailer":1}, openLGs={};
-var STORAGE="mfh_v5";
+var files = [], activeFileId = null, activeSheet = 0, sortState = {col:-1, asc:true};
+var activeLender = "All", openCats = {mortgage:1, equipment:1, trailer:1}, openLGs = {};
+var STORAGE = "mfh_v5";
+var MONS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-window.addEventListener("DOMContentLoaded", function() {
-  loadFiles();
-  setupDrop();
-  document.getElementById("file-input").addEventListener("change", function(e){ handleFiles(e.target.files); });
-  document.getElementById("loan-scroll").addEventListener("click", function(e) {
-    var ch = e.target.closest(".loan-cat-header");
-    if (ch) { var cat = ch.closest(".loan-category"); if(cat) toggleCat(cat.getAttribute("data-cat")); return; }
-    var lh = e.target.closest(".lender-group-header");
-    if (lh) { var lg = lh.closest(".lender-group"); if(lg) toggleLG(lg.getAttribute("data-lg")); }
-  });
-  document.getElementById("lender-strip").addEventListener("click", function(e) {
-    var chip = e.target.closest(".ls-chip");
-    if (chip) setLender(chip.getAttribute("data-lid"));
-  });
-  document.getElementById("nav-dashboard").addEventListener("click", function(){ switchView("dashboard"); });
-  document.getElementById("nav-raw").addEventListener("click", function(){ switchView("raw"); });
-  renderDashboard();
-});
-
-function switchView(v) {
-  document.getElementById("view-dashboard").style.display = v==="dashboard" ? "flex" : "none";
-  document.getElementById("view-raw").style.display = v==="raw" ? "flex" : "none";
-  document.getElementById("nav-dashboard").className = "nav-pill" + (v==="dashboard" ? " active" : "");
-  document.getElementById("nav-raw").className = "nav-pill" + (v==="raw" ? " active" : "");
+function mdiff(m) {
+  if (!m) return 99999;
+  var p = m.split("-");
+  return (parseInt(p[0], 10) - 2026) * 12 + (parseInt(p[1], 10) - 1);
 }
-
-function mdiff(m) { if(!m) return 99999; var p=m.split("-"); return (parseInt(p[0])-2026)*12+(parseInt(p[1])-1); }
-function mcls(m) { var d=mdiff(m); if(d<=12) return "mat-urgent"; if(d<=24) return "mat-warn"; if(d<=60) return "mat-ok"; return "mat-long"; }
-var MONS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+function mcls(m) {
+  var d = mdiff(m);
+  if (d <= 12) return "mat-urgent";
+  if (d <= 24) return "mat-warn";
+  if (d <= 60) return "mat-ok";
+  return "mat-long";
+}
 function fmtmat(m) {
-  if(!m) return "<span class=\"mat-long\">-</span>";
-  var p=m.split("-"), flag=mcls(m)==="mat-urgent"?" !":"";
-  return "<span class=\""+mcls(m)+"\">"+MONS[parseInt(p[1],10)-1]+" "+p[0]+flag+"</span>";
+  if (!m) return "<span class=\"mat-long\">-</span>";
+  var p = m.split("-");
+  var flag = mcls(m) === "mat-urgent" ? " !" : "";
+  return "<span class=\"" + mcls(m) + "\">" + MONS[parseInt(p[1], 10) - 1] + " " + p[0] + flag + "</span>";
 }
 function nextmat() {
-  var best=null;
-  CATS.forEach(function(cat){ if(cat.isAsset) return; cat.groups.forEach(function(g){ g.loans.forEach(function(l){ if(l.mat&&mdiff(l.mat)>=0&&(best===null||mdiff(l.mat)<mdiff(best))) best=l.mat; }); }); });
+  var best = null;
+  CATS.forEach(function(cat) {
+    if (cat.isAsset) return;
+    cat.groups.forEach(function(g) {
+      g.loans.forEach(function(l) {
+        if (l.mat && mdiff(l.mat) >= 0 && (best === null || mdiff(l.mat) < mdiff(best))) best = l.mat;
+      });
+    });
+  });
   return best;
 }
 function allloans() {
-  var r=[]; CATS.forEach(function(cat){ if(!cat.isAsset) cat.groups.forEach(function(g){ g.loans.forEach(function(l){ r.push(l); }); }); }); return r;
+  var r = [];
+  CATS.forEach(function(cat) {
+    if (!cat.isAsset) cat.groups.forEach(function(g) { g.loans.forEach(function(l) { r.push(l); }); });
+  });
+  return r;
+}
+function fmt(n) {
+  return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmt2(n) {
+  var abs = Math.abs(n);
+  var s = abs >= 1e6 ? "$" + (abs / 1e6).toFixed(2) + "M" : "$" + abs.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+  return (n < 0 ? "-" : "") + s;
+}
+function esc(str) {
+  return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function showToast(msg, type) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "show" + (type ? " " + type : "");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function() { t.className = ""; }, 2600);
 }
 
-function renderDashboard() { renderKPIs(); renderStrip(); renderCats(); renderFooter(); }
+function switchView(v) {
+  var vd = document.getElementById("view-dashboard");
+  var vr = document.getElementById("view-raw");
+  var nd = document.getElementById("nav-dashboard");
+  var nr = document.getElementById("nav-raw");
+  if (v === "dashboard") {
+    vd.style.display = "flex";
+    vr.style.display = "none";
+    nd.className = "nav-pill active";
+    nr.className = "nav-pill";
+  } else {
+    vd.style.display = "none";
+    vr.style.display = "flex";
+    nd.className = "nav-pill";
+    nr.className = "nav-pill active";
+  }
+}
+
+function renderDashboard() {
+  renderKPIs();
+  renderStrip();
+  renderCats();
+  renderFooter();
+}
 
 function renderKPIs() {
-  var loans=allloans(), tot=loans.reduce(function(s,l){return s+l.bal;},0);
-  var avg=loans.reduce(function(s,l){return s+l.rate;},0)/loans.length;
-  var nm=nextmat(), p=nm?nm.split("-"):["?","01"];
-  document.getElementById("kpi-total").textContent=fmt(tot);
-  document.getElementById("kpi-count").textContent=loans.length;
-  document.getElementById("kpi-rate").textContent=avg.toFixed(2)+"%";
-  document.getElementById("kpi-maturity").textContent=MONS[parseInt(p[1],10)-1]+" "+p[0];
+  var loans = allloans();
+  var tot = loans.reduce(function(s, l) { return s + l.bal; }, 0);
+  var avg = loans.reduce(function(s, l) { return s + l.rate; }, 0) / loans.length;
+  var nm = nextmat();
+  var p = nm ? nm.split("-") : ["?", "01"];
+  document.getElementById("kpi-total").textContent = fmt(tot);
+  document.getElementById("kpi-count").textContent = loans.length;
+  document.getElementById("kpi-rate").textContent = avg.toFixed(2) + "%";
+  document.getElementById("kpi-maturity").textContent = MONS[parseInt(p[1], 10) - 1] + " " + p[0];
 }
 
 function renderStrip() {
-  var loans=allloans(), counts={All:loans.length};
-  LCHIPS.slice(1).forEach(function(chip){
-    counts[chip.id]=0;
-    CATS.forEach(function(cat){ cat.groups.forEach(function(g){ if(chip.lenders.indexOf(g.lender)>=0) counts[chip.id]+=g.loans.length; }); });
+  var loans = allloans();
+  var counts = {All: loans.length};
+  LCHIPS.slice(1).forEach(function(chip) {
+    counts[chip.id] = 0;
+    CATS.forEach(function(cat) {
+      cat.groups.forEach(function(g) {
+        if (chip.lenders.indexOf(g.lender) >= 0) counts[chip.id] += g.loans.length;
+      });
+    });
   });
-  var h="";
-  LCHIPS.forEach(function(chip){
-    var isAct=activeLender===chip.id;
-    var cls=chip.id==="All"?"ls-chip"+(isAct?" all-active":""):"ls-chip "+chip.cls+(isAct?" active":"");
-    h+="<div class=\""+cls+"\" data-lid=\""+chip.id+"\">"+chip.label+"<span class=\"lc\">"+counts[chip.id]+"</span></div>";
+  var h = "";
+  LCHIPS.forEach(function(chip) {
+    var isAct = activeLender === chip.id;
+    var cls = chip.id === "All" ? ("ls-chip" + (isAct ? " all-active" : "")) : ("ls-chip " + chip.cls + (isAct ? " active" : ""));
+    h += "<div class=\"" + cls + "\" data-lid=\"" + chip.id + "\">" + chip.label + "<span class=\"lc\">" + counts[chip.id] + "</span></div>";
   });
-  document.getElementById("lender-strip").innerHTML=h;
+  document.getElementById("lender-strip").innerHTML = h;
 }
 
-function setLender(id){ activeLender=id; renderStrip(); renderCats(); }
-function toggleCat(id){ if(openCats[id]) delete openCats[id]; else openCats[id]=1; renderCats(); }
-function toggleLG(id){ if(openLGs[id]) delete openLGs[id]; else openLGs[id]=1; renderCats(); }
+function setLender(id) { activeLender = id; renderStrip(); renderCats(); }
+function toggleCat(id) { if (openCats[id]) delete openCats[id]; else openCats[id] = 1; renderCats(); }
+function toggleLG(id) { if (openLGs[id]) delete openLGs[id]; else openLGs[id] = 1; renderCats(); }
 
 function renderCats() {
-  var scroll=document.getElementById("loan-scroll"), h="";
-  var actLenders=LCHIPS.filter(function(c){return c.id===activeLender;})[0];
-  var lnds=actLenders?actLenders.lenders:["Wintrust","BMO","Webster","Paccar","Internal"];
+  var scroll = document.getElementById("loan-scroll");
+  var h = "";
+  var actLenders = LCHIPS.filter(function(c) { return c.id === activeLender; })[0];
+  var lnds = actLenders ? actLenders.lenders : ["Wintrust","BMO","Webster","Paccar","Internal"];
 
-  CATS.forEach(function(cat){
-    var groups=activeLender==="All"?cat.groups:cat.groups.filter(function(g){return lnds.indexOf(g.lender)>=0;});
-    if(!groups.length) return;
-    var catLoans=[], catTot=0;
-    groups.forEach(function(g){ g.loans.forEach(function(l){ catLoans.push(l); if(l.bal) catTot+=l.bal; }); });
-    var isOpen=openCats[cat.id];
+  CATS.forEach(function(cat) {
+    var groups = activeLender === "All" ? cat.groups : cat.groups.filter(function(g) { return lnds.indexOf(g.lender) >= 0; });
+    if (!groups.length) return;
+    var catLoans = [], catTot = 0;
+    groups.forEach(function(g) { g.loans.forEach(function(l) { catLoans.push(l); if (l.bal) catTot += l.bal; }); });
+    var isOpen = openCats[cat.id];
 
-    h+="<div class=\"loan-category"+(isOpen?" open ":" ")+cat.cls+"\" data-cat=\""+cat.id+"\">";
-    h+="<div class=\"loan-cat-header\">";
-    h+="<div class=\"loan-cat-left\"><div class=\"cat-dot-lg\" style=\"background:"+cat.dot+"\"></div>";
-    h+="<div class=\"cat-label-block\"><div class=\"cat-name\">"+esc(cat.label)+"</div>";
-    h+="<div class=\"cat-meta\">"+catLoans.length+" instrument"+(catLoans.length!==1?"s":"")+" across "+groups.length+" lender"+(groups.length!==1?"s":"")+"</div></div></div>";
-    h+="<div class=\"cat-right\"><div class=\"cat-total\">"+(cat.isAsset?"<span style=\"color:#a78bfa\">ASSETS</span>":fmt(catTot))+"</div>";
-    h+="<div class=\"cat-chevron\"><svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg></div></div></div>";
+    h += "<div class=\"loan-category" + (isOpen ? " open " : " ") + cat.cls + "\" data-cat=\"" + cat.id + "\">";
+    h += "<div class=\"loan-cat-header\">";
+    h += "<div class=\"loan-cat-left\"><div class=\"cat-dot-lg\" style=\"background:" + cat.dot + "\"></div>";
+    h += "<div class=\"cat-label-block\"><div class=\"cat-name\">" + esc(cat.label) + "</div>";
+    h += "<div class=\"cat-meta\">" + catLoans.length + " instrument" + (catLoans.length !== 1 ? "s" : "") + " across " + groups.length + " lender" + (groups.length !== 1 ? "s" : "") + "</div></div></div>";
+    h += "<div class=\"cat-right\"><div class=\"cat-total\">" + (cat.isAsset ? "<span style=\"color:#a78bfa\">ASSETS</span>" : fmt(catTot)) + "</div>";
+    h += "<div class=\"cat-chevron\"><svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg></div></div></div>";
 
-    if(isOpen) {
-      h+="<div class=\"loan-rows\">";
-      if(cat.isAsset) {
-        h+="<div class=\"nr-banner\"><div class=\"nr-banner-title\">Notes Receivable - Owed TO Meiborg</div>";
-        h+="<div class=\"nr-stats\">";
-        h+="<div class=\"nr-stat\"><div class=\"nr-stat-label\">Operators</div><div class=\"nr-stat-value\">31+</div></div>";
-        h+="<div class=\"nr-stat\"><div class=\"nr-stat-label\">Weekly Range</div><div class=\"nr-stat-value\" style=\"font-size:11px\">$307-$997</div></div>";
-        h+="<div class=\"nr-stat\"><div class=\"nr-stat-label\">Rockford Note</div><div class=\"nr-stat-value\">$100K</div></div>";
-        h+="</div></div>";
+    if (isOpen) {
+      h += "<div class=\"loan-rows\">";
+      if (cat.isAsset) {
+        h += "<div class=\"nr-banner\"><div class=\"nr-banner-title\">Notes Receivable - Owed TO Meiborg</div>";
+        h += "<div class=\"nr-stats\">";
+        h += "<div class=\"nr-stat\"><div class=\"nr-stat-label\">Operators</div><div class=\"nr-stat-value\">31+</div></div>";
+        h += "<div class=\"nr-stat\"><div class=\"nr-stat-label\">Weekly Range</div><div class=\"nr-stat-value\" style=\"font-size:11px\">$307-$997</div></div>";
+        h += "<div class=\"nr-stat\"><div class=\"nr-stat-label\">Rockford Note</div><div class=\"nr-stat-value\">$100K</div></div>";
+        h += "</div></div>";
       }
-      groups.forEach(function(g){
-        var lgid=cat.id+"_"+g.lender, lgOpen=openLGs[lgid];
-        var lgTot=g.loans.reduce(function(s,l){return s+(l.bal||0);},0);
-        h+="<div class=\"lender-group"+(lgOpen?" lg-open\":" \"")+" data-lg=\""+lgid+"\">";
-        h+="<div class=\"lender-group-header\"><div class=\"lg-left\"><span class=\"lg-badge "+g.badge+"\">"+esc(g.lender)+"</span>";
-        h+="<span class=\"lg-count\">"+g.loans.length+" loan"+(g.loans.length!==1?"s":"")+"</span></div>";
-        h+="<div style=\"display:flex;align-items:center;gap:8px\"><div class=\"lg-total\">"+(lgTot?fmt(lgTot):"-")+"</div>";
-        h+="<div class=\"lg-chevron\"><svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg></div></div></div>";
-        if(lgOpen) {
-          h+="<div class=\"lender-group-rows\">";
-          h+="<div class=\"col-hdr\"><span>Entity</span><span>Description</span><span>Balance</span><span>Rate</span><span>Matures</span></div>";
-          g.loans.forEach(function(loan){
-            h+="<div class=\"loan-row\"><span class=\"lr-entity entity-"+loan.en+"\">"+esc(loan.en)+"</span>";
-            h+="<div class=\"lr-desc\" title=\""+esc(loan.desc)+"\">"+esc(loan.desc)+"</div>";
-            h+="<div class=\"lr-balance"+(cat.isAsset?" is-asset\":" \"")+">";
-            if(loan.bal) h+=fmt(loan.bal);
-            else if(loan.weekly) h+="<span style=\"color:var(--gold)\">"+esc(loan.weekly)+"</span>";
-            else h+="-";
-            h+="</div>";
-            h+="<div class=\"lr-rate\">"+(loan.rate?loan.rate.toFixed(2)+"%":"-")+"</div>";
-            h+="<div class=\"lr-maturity\">"+fmtmat(loan.mat)+"</div></div>";
+      groups.forEach(function(g) {
+        var lgid = cat.id + "_" + g.lender;
+        var lgOpen = openLGs[lgid];
+        var lgTot = g.loans.reduce(function(s, l) { return s + (l.bal || 0); }, 0);
+        h += "<div class=\"lender-group" + (lgOpen ? " lg-open\"" : "\"") + " data-lg=\"" + lgid + "\">";
+        h += "<div class=\"lender-group-header\"><div class=\"lg-left\"><span class=\"lg-badge " + g.badge + "\">" + esc(g.lender) + "</span>";
+        h += "<span class=\"lg-count\">" + g.loans.length + " loan" + (g.loans.length !== 1 ? "s" : "") + "</span></div>";
+        h += "<div style=\"display:flex;align-items:center;gap:8px\"><div class=\"lg-total\">" + (lgTot ? fmt(lgTot) : "-") + "</div>";
+        h += "<div class=\"lg-chevron\"><svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><polyline points=\"6 9 12 15 18 9\"/></svg></div></div></div>";
+        if (lgOpen) {
+          h += "<div class=\"lender-group-rows\">";
+          h += "<div class=\"col-hdr\"><span>Entity</span><span>Description</span><span>Balance</span><span>Rate</span><span>Matures</span></div>";
+          g.loans.forEach(function(loan) {
+            h += "<div class=\"loan-row\"><span class=\"lr-entity entity-" + loan.en + "\">" + esc(loan.en) + "</span>";
+            h += "<div class=\"lr-desc\" title=\"" + esc(loan.desc) + "\">" + esc(loan.desc) + "</div>";
+            h += "<div class=\"lr-balance" + (cat.isAsset ? " is-asset\"" : "\"") + ">";
+            if (loan.bal) h += fmt(loan.bal);
+            else if (loan.weekly) h += "<span style=\"color:var(--gold)\">" + esc(loan.weekly) + "</span>";
+            else h += "-";
+            h += "</div>";
+            h += "<div class=\"lr-rate\">" + (loan.rate ? loan.rate.toFixed(2) + "%" : "-") + "</div>";
+            h += "<div class=\"lr-maturity\">" + fmtmat(loan.mat) + "</div></div>";
           });
-          if(lgTot) h+="<div class=\"cat-subtotal\"><span class=\"cst-label\">"+g.lender+" Subtotal</span><span class=\"cst-val\" style=\"color:"+cat.color+"\">"+fmt(lgTot)+"</span></div>";
-          h+="</div>";
+          if (lgTot) h += "<div class=\"cat-subtotal\"><span class=\"cst-label\">" + g.lender + " Subtotal</span><span class=\"cst-val\" style=\"color:" + cat.color + "\">" + fmt(lgTot) + "</span></div>";
+          h += "</div>";
         }
-        h+="</div>";
+        h += "</div>";
       });
-      if(!cat.isAsset&&catTot) h+="<div class=\"cat-subtotal\" style=\"background:var(--bg4)\"><span class=\"cst-label\" style=\"font-weight:700\">Category Total</span><span class=\"cst-val\" style=\"color:"+cat.color+";font-size:13px\">"+fmt(catTot)+"</span></div>";
-      h+="</div>";
+      if (!cat.isAsset && catTot) h += "<div class=\"cat-subtotal\" style=\"background:var(--bg4)\"><span class=\"cst-label\" style=\"font-weight:700\">Category Total</span><span class=\"cst-val\" style=\"color:" + cat.color + ";font-size:14px\">" + fmt(catTot) + "</span></div>";
+      h += "</div>";
     }
-    h+="</div>";
+    h += "</div>";
   });
-  scroll.innerHTML=h;
+  scroll.innerHTML = h;
 }
 
-function renderFooter(){
-  var loans=allloans(), tot=loans.reduce(function(s,l){return s+l.bal;},0);
-  document.getElementById("df-total").textContent=fmt(tot);
-  document.getElementById("df-sub").textContent=loans.length+" active loans across 4 lenders | 5 legal entities";
+function renderFooter() {
+  var loans = allloans();
+  var tot = loans.reduce(function(s, l) { return s + l.bal; }, 0);
+  document.getElementById("df-total").textContent = fmt(tot);
+  document.getElementById("df-sub").textContent = loans.length + " active loans across 4 lenders | 5 legal entities";
 }
 
-function setupDrop(){
-  var zone=document.getElementById("drop-zone");
-  zone.addEventListener("dragover",function(e){e.preventDefault();zone.classList.add("drag-over");});
-  zone.addEventListener("dragleave",function(){zone.classList.remove("drag-over");});
-  zone.addEventListener("drop",function(e){e.preventDefault();zone.classList.remove("drag-over");handleFiles(e.dataTransfer.files);});
+function setupDrop() {
+  var zone = document.getElementById("drop-zone");
+  zone.addEventListener("dragover", function(e) { e.preventDefault(); zone.classList.add("drag-over"); });
+  zone.addEventListener("dragleave", function() { zone.classList.remove("drag-over"); });
+  zone.addEventListener("drop", function(e) { e.preventDefault(); zone.classList.remove("drag-over"); handleFiles(e.dataTransfer.files); });
 }
-function handleFiles(fl){
-  Array.from(fl).forEach(function(file){
-    var ext=file.name.split(".").pop().toLowerCase();
-    if(["xlsx","xls","csv"].indexOf(ext)<0){showToast("Unsupported: ."+ext,"error");return;}
-    var reader=new FileReader();
-    reader.onload=function(e){
-      var sheets=parseFile(e.target.result,ext);
-      if(!sheets){showToast("Could not parse "+file.name,"error");return;}
-      var id=Date.now()+Math.random();
-      files.unshift({id:id,name:file.name,ext:ext,date:new Date().toLocaleDateString(),base64:e.target.result,sheets:sheets});
-      persistFiles();renderSidebar();setActive(id);showToast("Loaded "+file.name,"success");
+
+function handleFiles(fl) {
+  Array.from(fl).forEach(function(file) {
+    var ext = file.name.split(".").pop().toLowerCase();
+    if (["xlsx","xls","csv"].indexOf(ext) < 0) { showToast("Unsupported: ." + ext, "error"); return; }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var sheets = parseFile(e.target.result, ext);
+      if (!sheets) { showToast("Could not parse " + file.name, "error"); return; }
+      var id = Date.now() + Math.random();
+      files.unshift({id:id, name:file.name, ext:ext, date:new Date().toLocaleDateString(), base64:e.target.result, sheets:sheets});
+      persistFiles();
+      renderSidebar();
+      setActive(id);
+      showToast("Loaded " + file.name, "success");
     };
     reader.readAsDataURL(file);
   });
 }
-function parseFile(dataUrl,ext){
-  try{
-    var b64=dataUrl.split(",")[1],binary=atob(b64),bytes=new Uint8Array(binary.length);
-    for(var i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
-    var wb=ext==="csv"?XLSX.read(new TextDecoder().decode(bytes),{type:"string"}):XLSX.read(bytes,{type:"array"});
-    return wb.SheetNames.map(function(name){return{name:name,data:XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:""})};});
-  }catch(e){console.error(e);return null;}
+
+function parseFile(dataUrl, ext) {
+  try {
+    var b64 = dataUrl.split(",")[1];
+    var binary = atob(b64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    var wb = ext === "csv" ? XLSX.read(new TextDecoder().decode(bytes), {type:"string"}) : XLSX.read(bytes, {type:"array"});
+    return wb.SheetNames.map(function(name) { return {name:name, data:XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:""})}; });
+  } catch(e) { console.error(e); return null; }
 }
-function persistFiles(){try{localStorage.setItem(STORAGE,JSON.stringify(files));}catch(e){if(files.length>1){files.pop();persistFiles();}else showToast("Storage full","error");}}
-function loadFiles(){try{var raw=localStorage.getItem(STORAGE);if(raw){files=JSON.parse(raw);renderSidebar();}}catch(e){files=[];}}
-function deleteFile(id,e){e.stopPropagation();files=files.filter(function(f){return f.id!==id;});persistFiles();if(activeFileId===id)activeFileId=null;renderSidebar();showToast("File removed");}
-function setActive(id){activeFileId=id;activeSheet=0;sortState={col:-1,asc:true};renderSidebar();renderViewer();}
-function renderSidebar(){
-  var list=document.getElementById("file-list"),empty=document.getElementById("empty-files");
-  document.getElementById("file-count").textContent=files.length;
-  if(!files.length){empty.style.display="";list.innerHTML="";list.appendChild(empty);return;}
-  empty.style.display="none";
-  list.innerHTML=files.map(function(f){
-    return "<div class=\"file-item"+(f.id===activeFileId?" active\":" \"")+" onclick=\"setActive("+JSON.stringify(f.id)+")\">"
-      +"<div class=\"file-icon\"><span class=\""+(f.ext==="csv"?"csv-badge":"xlsx-badge")+"\">" +f.ext.toUpperCase()+"</span></div>"
-      +"<div class=\"file-info\"><div class=\"file-name\" title=\""+esc(f.name)+"\">"+esc(f.name)+"</div>"
-      +"<div class=\"file-meta\">"+f.date+" - "+f.sheets.length+" sheet"+(f.sheets.length!==1?"s":"")+"</div></div>"
-      +"<button class=\"file-delete\" onclick=\"deleteFile("+JSON.stringify(f.id)+",event)\">"
-      +"<svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6\"/></svg></button></div>";
+
+function persistFiles() {
+  try { localStorage.setItem(STORAGE, JSON.stringify(files)); }
+  catch(e) { if (files.length > 1) { files.pop(); persistFiles(); } else showToast("Storage full", "error"); }
+}
+function loadFiles() {
+  try { var raw = localStorage.getItem(STORAGE); if (raw) { files = JSON.parse(raw); renderSidebar(); } }
+  catch(e) { files = []; }
+}
+function deleteFile(id, e) {
+  e.stopPropagation();
+  files = files.filter(function(f) { return f.id !== id; });
+  persistFiles();
+  if (activeFileId === id) activeFileId = null;
+  renderSidebar();
+  showToast("File removed");
+}
+function setActive(id) { activeFileId = id; activeSheet = 0; sortState = {col:-1, asc:true}; renderSidebar(); renderViewer(); }
+
+function renderSidebar() {
+  var list = document.getElementById("file-list");
+  var empty = document.getElementById("empty-files");
+  document.getElementById("file-count").textContent = files.length;
+  if (!files.length) { empty.style.display = ""; list.innerHTML = ""; list.appendChild(empty); return; }
+  empty.style.display = "none";
+  list.innerHTML = files.map(function(f) {
+    return "<div class=\"file-item" + (f.id === activeFileId ? " active\"" : "\"") + " data-fid=\"" + f.id + "\">"
+      + "<div class=\"file-icon\"><span class=\"" + (f.ext === "csv" ? "csv-badge" : "xlsx-badge") + "\">" + f.ext.toUpperCase() + "</span></div>"
+      + "<div class=\"file-info\"><div class=\"file-name\" title=\"" + esc(f.name) + "\">" + esc(f.name) + "</div>"
+      + "<div class=\"file-meta\">" + f.date + " - " + f.sheets.length + " sheet" + (f.sheets.length !== 1 ? "s" : "") + "</div></div>"
+      + "<button class=\"file-delete\" data-del=\"" + f.id + "\">"
+      + "<svg viewBox=\"0 0 24 24\" stroke-width=\"2\"><path d=\"M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6\"/></svg></button></div>";
   }).join("");
 }
-function renderViewer(){
-  var file=files.filter(function(f){return f.id===activeFileId;})[0];
-  var ve=document.getElementById("viewer-empty"),vc=document.getElementById("viewer-content");
-  if(!file){ve.style.display="flex";vc.style.display="none";return;}
-  ve.style.display="none";vc.style.display="flex";
-  document.getElementById("active-file-name").textContent=file.name;
-  document.getElementById("active-file-meta").textContent=file.date+" - "+file.sheets.length+" sheet"+(file.sheets.length!==1?"s":"");
-  renderTabs(file);renderSheet(file,activeSheet);
+
+function renderViewer() {
+  var file = files.filter(function(f) { return f.id === activeFileId; })[0];
+  var ve = document.getElementById("viewer-empty");
+  var vc = document.getElementById("viewer-content");
+  if (!file) { ve.style.display = "flex"; vc.style.display = "none"; return; }
+  ve.style.display = "none"; vc.style.display = "flex";
+  document.getElementById("active-file-name").textContent = file.name;
+  document.getElementById("active-file-meta").textContent = file.date + " - " + file.sheets.length + " sheet" + (file.sheets.length !== 1 ? "s" : "");
+  renderTabs(file);
+  renderSheet(file, activeSheet);
 }
-function renderTabs(file){
-  document.getElementById("tab-bar").innerHTML=file.sheets.map(function(s,i){return "<div class=\"sheet-tab"+(i===activeSheet?" active\":" \"")+" onclick=\"switchSheet("+i+")\">"+esc(s.name)+"</div>";}).join("");
+
+function renderTabs(file) {
+  document.getElementById("tab-bar").innerHTML = file.sheets.map(function(s, i) {
+    return "<div class=\"sheet-tab" + (i === activeSheet ? " active\"" : "\"") + " data-si=\"" + i + "\">" + esc(s.name) + "</div>";
+  }).join("");
 }
-function switchSheet(i){activeSheet=i;sortState={col:-1,asc:true};var file=files.filter(function(f){return f.id===activeFileId;})[0];if(file){renderTabs(file);renderSheet(file,i);}}
-function renderSheet(file,idx){
-  var sheet=file.sheets[idx];
-  if(!sheet||!sheet.data.length){document.getElementById("stats-bar").innerHTML="<span>Empty</span>";document.querySelector("#data-table thead").innerHTML="";document.querySelector("#data-table tbody").innerHTML="<tr><td style=\"padding:18px;color:var(--text3)\">No data.</td></tr>";return;}
-  var headers=sheet.data[0];
-  var allBody=sortState.col>=0?sortRows(sheet.data.slice(1),sortState.col,sortState.asc):sheet.data.slice(1);
-  var dr=allBody.filter(function(r){return r.some(function(c){return c!=="";});});
-  document.getElementById("stats-bar").innerHTML="<span class=\"stat-chip\"><span class=\"val\">"+dr.length.toLocaleString()+"</span> rows</span><span class=\"stat-chip\"><span class=\"val\">"+headers.length+"</span> cols</span>";
-  document.querySelector("#data-table thead").innerHTML="<tr>"+headers.map(function(h,i){var arr=sortState.col===i?(sortState.asc?" ^":" v"):" ~";return"<th onclick=\"sortByCol("+i+")\">"+esc(String(h))+"<span class=\"sort-arrow\">"+arr+"</span></th>";}).join("")+"</tr>";
-  var MAX=2000;
-  document.querySelector("#data-table tbody").innerHTML=allBody.slice(0,MAX).map(function(row){return"<tr>"+headers.map(function(h,ci){return"<td>"+fmtCell(String(h),row[ci]!==undefined?row[ci]:"")+"</td>";}).join("")+"</tr>";}).join("")+(allBody.length>MAX?"<tr><td colspan=\""+headers.length+"\" style=\"text-align:center;color:var(--text3);padding:10px;font-size:10px\">Showing first "+MAX+" of "+allBody.length.toLocaleString()+" rows</td></tr>":"");
+
+function switchSheet(i) {
+  activeSheet = i;
+  sortState = {col:-1, asc:true};
+  var file = files.filter(function(f) { return f.id === activeFileId; })[0];
+  if (file) { renderTabs(file); renderSheet(file, i); }
 }
-function sortByCol(col){sortState=sortState.col===col?{col:col,asc:!sortState.asc}:{col:col,asc:true};var file=files.filter(function(f){return f.id===activeFileId;})[0];if(file)renderSheet(file,activeSheet);}
-function sortRows(rows,col,asc){return rows.slice().sort(function(a,b){var av=a[col]!==undefined?a[col]:"",bv=b[col]!==undefined?b[col]:"";var an=parseFloat(String(av).replace(/[$,%]/g,"")),bn=parseFloat(String(bv).replace(/[$,%]/g,""));var cmp=(!isNaN(an)&&!isNaN(bn))?an-bn:String(av).localeCompare(String(bv));return asc?cmp:-cmp;});}
-function fmtCell(header,val){
-  if(val===""||val===null||val===undefined) return "<span style=\"color:var(--text3)\">-</span>";
-  var str=String(val),h=header.toLowerCase(),num=parseFloat(str.replace(/[$,%\s]/g,""));
-  var ENTS=["Bros","Enterprise","Ent","WHS","SAE","MH1","MH2","MH3","MH5"];
-  var ent=ENTS.filter(function(e){return str.trim().toUpperCase()===e.toUpperCase();})[0];
-  if(ent) return "<span class=\"cell-entity entity-"+ent+"\">"+esc(str)+"</span>";
-  if(/[$]/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)){if(!isNaN(num)) return "<span class=\""+(num<0?"cell-negative":"cell-dollar")+"\">"+fmt2(num)+"</span>";}
-  if(/rate|percent|%/.test(h)||str.indexOf("%")>=0) return "<span class=\"cell-pct\">"+esc(str)+"</span>";
-  if(!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h)) return "<span class=\""+(num<0?"cell-negative":"cell-dollar")+"\">"+fmt2(num)+"</span>";
+
+function renderSheet(file, idx) {
+  var sheet = file.sheets[idx];
+  if (!sheet || !sheet.data.length) {
+    document.getElementById("stats-bar").innerHTML = "<span>Empty</span>";
+    document.querySelector("#data-table thead").innerHTML = "";
+    document.querySelector("#data-table tbody").innerHTML = "<tr><td style=\"padding:18px;color:var(--text3)\">No data.</td></tr>";
+    return;
+  }
+  var headers = sheet.data[0];
+  var allBody = sortState.col >= 0 ? sortRows(sheet.data.slice(1), sortState.col, sortState.asc) : sheet.data.slice(1);
+  var dr = allBody.filter(function(r) { return r.some(function(c) { return c !== ""; }); });
+  document.getElementById("stats-bar").innerHTML = "<span class=\"stat-chip\"><span class=\"val\">" + dr.length.toLocaleString() + "</span> rows</span><span class=\"stat-chip\"><span class=\"val\">" + headers.length + "</span> cols</span>";
+  document.querySelector("#data-table thead").innerHTML = "<tr>" + headers.map(function(h, i) {
+    var arr = sortState.col === i ? (sortState.asc ? " ^" : " v") : " ~";
+    return "<th data-col=\"" + i + "\">" + esc(String(h)) + "<span class=\"sort-arrow\">" + arr + "</span></th>";
+  }).join("") + "</tr>";
+  var MAX = 2000;
+  document.querySelector("#data-table tbody").innerHTML = allBody.slice(0, MAX).map(function(row) {
+    return "<tr>" + headers.map(function(h, ci) { return "<td>" + fmtCell(String(h), row[ci] !== undefined ? row[ci] : "") + "</td>"; }).join("") + "</tr>";
+  }).join("") + (allBody.length > MAX ? "<tr><td colspan=\"" + headers.length + "\" style=\"text-align:center;color:var(--text3);padding:10px;font-size:10px\">Showing first " + MAX + " of " + allBody.length.toLocaleString() + " rows</td></tr>" : "");
+}
+
+function sortByCol(col) {
+  sortState = sortState.col === col ? {col:col, asc:!sortState.asc} : {col:col, asc:true};
+  var file = files.filter(function(f) { return f.id === activeFileId; })[0];
+  if (file) renderSheet(file, activeSheet);
+}
+
+function sortRows(rows, col, asc) {
+  return rows.slice().sort(function(a, b) {
+    var av = a[col] !== undefined ? a[col] : "", bv = b[col] !== undefined ? b[col] : "";
+    var an = parseFloat(String(av).replace(/[$,%]/g,"")), bn = parseFloat(String(bv).replace(/[$,%]/g,""));
+    var cmp = (!isNaN(an) && !isNaN(bn)) ? an - bn : String(av).localeCompare(String(bv));
+    return asc ? cmp : -cmp;
+  });
+}
+
+function fmtCell(header, val) {
+  if (val === "" || val === null || val === undefined) return "<span style=\"color:var(--text3)\">-</span>";
+  var str = String(val), h = header.toLowerCase(), num = parseFloat(str.replace(/[$,%\s]/g,""));
+  var ENTS = ["Bros","Enterprise","Ent","WHS","SAE","MH1","MH2","MH3","MH5"];
+  var ent = ENTS.filter(function(e) { return str.trim().toUpperCase() === e.toUpperCase(); })[0];
+  if (ent) return "<span class=\"cell-entity entity-" + ent + "\">" + esc(str) + "</span>";
+  if (/[$]/.test(str) || /balance|amount|principal|payment|loan|debt|outstanding/.test(h)) {
+    if (!isNaN(num)) return "<span class=\"" + (num < 0 ? "cell-negative" : "cell-dollar") + "\">" + fmt2(num) + "</span>";
+  }
+  if (/rate|percent|%/.test(h) || str.indexOf("%") >= 0) return "<span class=\"cell-pct\">" + esc(str) + "</span>";
+  if (!isNaN(num) && Math.abs(num) >= 1000 && /balance|amount|principal|payment|loan|debt/.test(h)) return "<span class=\"" + (num < 0 ? "cell-negative" : "cell-dollar") + "\">" + fmt2(num) + "</span>";
   return esc(str);
 }
-function exportCSV(){
-  var file=files.filter(function(f){return f.id===activeFileId;})[0];if(!file)return;
-  var sheet=file.sheets[activeSheet];if(!sheet)return;
-  var csv=sheet.data.map(function(row){return row.map(function(c){var s=String(c!==undefined?c:"");return(s.indexOf(",")>=0||s.indexOf("\"")>=0)?"\""+s.replace(/\"/g,"\"\"")+"\"":s;}).join(",");}).join("\n");
-  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download=file.name.replace(/\.[^.]+$/,"")+"_export.csv";a.click();showToast("CSV exported");
+
+function exportCSV() {
+  var file = files.filter(function(f) { return f.id === activeFileId; })[0];
+  if (!file) return;
+  var sheet = file.sheets[activeSheet];
+  if (!sheet) return;
+  var csv = sheet.data.map(function(row) {
+    return row.map(function(c) {
+      var s = String(c !== undefined ? c : "");
+      return (s.indexOf(",") >= 0 || s.indexOf("\"") >= 0) ? "\"" + s.replace(/\"/g, "\"\"") + "\"" : s;
+    }).join(",");
+  }).join("\n");
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv"}));
+  a.download = file.name.replace(/\.[^.]+$/, "") + "_export.csv";
+  a.click();
+  showToast("CSV exported");
 }
-function fmt(n){return(n<0?"-$":"$")+Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});}
-function fmt2(n){var abs=Math.abs(n);var s=abs>=1e6?"$"+(abs/1e6).toFixed(2)+"M":"$"+abs.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});return(n<0?"-":"")+s;}
-function esc(str){return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function showToast(msg,type){var t=document.getElementById("toast");t.textContent=msg;t.className="show"+(type?" "+type:"");clearTimeout(t._timer);t._timer=setTimeout(function(){t.className="";},2600);}
+
+window.addEventListener("DOMContentLoaded", function() {
+  loadFiles();
+  setupDrop();
+
+  document.getElementById("file-input").addEventListener("change", function(e) { handleFiles(e.target.files); });
+
+  document.getElementById("loan-scroll").addEventListener("click", function(e) {
+    var ch = e.target.closest(".loan-cat-header");
+    if (ch) { var cat = ch.closest(".loan-category"); if (cat) toggleCat(cat.getAttribute("data-cat")); return; }
+    var lh = e.target.closest(".lender-group-header");
+    if (lh) { var lg = lh.closest(".lender-group"); if (lg) toggleLG(lg.getAttribute("data-lg")); }
+  });
+
+  document.getElementById("lender-strip").addEventListener("click", function(e) {
+    var chip = e.target.closest(".ls-chip");
+    if (chip) setLender(chip.getAttribute("data-lid"));
+  });
+
+  document.getElementById("nav-dashboard").addEventListener("click", function() { switchView("dashboard"); });
+  document.getElementById("nav-raw").addEventListener("click", function() { switchView("raw"); });
+
+  document.getElementById("shell").addEventListener("click", function(e) {
+    var fi = e.target.closest(".file-item");
+    if (fi && !e.target.closest(".file-delete")) { setActive(parseFloat(fi.getAttribute("data-fid"))); }
+    var fd = e.target.closest(".file-delete");
+    if (fd) { deleteFile(parseFloat(fd.getAttribute("data-del")), e); }
+    var th = e.target.closest("th[data-col]");
+    if (th) { sortByCol(parseInt(th.getAttribute("data-col"), 10)); }
+    var st = e.target.closest(".sheet-tab[data-si]");
+    if (st) { switchSheet(parseInt(st.getAttribute("data-si"), 10)); }
+  });
+
+  document.getElementById("btn-export").addEventListener("click", exportCSV);
+
+  renderDashboard();
+});
 </script>
 </body>
 </html>
