@@ -5,1376 +5,964 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meiborg Finance Hub — Debt Schedule Intelligence</title>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Barlow:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0f1117;
-  --bg2: #161920;
-  --bg3: #1e2128;
-  --bg4: #252830;
-  --border: #2a2d36;
-  --border2: #363a45;
-  --amber: #f59e0b;
-  --amber2: #fbbf24;
-  --amber-dim: rgba(245,158,11,0.12);
-  --amber-glow: rgba(245,158,11,0.06);
-  --text: #f0f2f5;
-  --text2: #9ca3af;
-  --text3: #6b7280;
-  --green: #10b981;
-  --red: #ef4444;
-  --blue: #3b82f6;
-  --sidebar-w: 255px;
-  --index-w: 430px;
-  --radius: 8px;
-  --radius-lg: 12px;
+  --bg:       #07090f;
+  --bg2:      #0d1117;
+  --bg3:      #111620;
+  --bg4:      #161d2a;
+  --bg5:      #1a2235;
+  --panel:    #0f1523;
+  --border:   #1e2d45;
+  --border2:  #243352;
+  --gold:     #c9a84c;
+  --gold2:    #e8c96d;
+  --gold-dim: rgba(201,168,76,0.10);
+  --gold-glow:rgba(201,168,76,0.05);
+  --text:     #e8edf5;
+  --text2:    #8fa3c0;
+  --text3:    #4d6280;
+  --green:    #22c55e;
+  --red:      #f43f5e;
+  --blue:     #38bdf8;
+  --purple:   #a78bfa;
+  --orange:   #fb923c;
+  --cyan:     #22d3ee;
+  --teal:     #2dd4bf;
+  --sidebar-w:240px;
+  --radius:   6px;
+  --radius-lg:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;display:flex;flex-direction:column;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+/* ── TOP NAV BAR ── */
+#topbar{
+  height:48px;min-height:48px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;
+  flex-shrink:0;
+  position:relative;
+  z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:14px;}
+.logo{
+  font-family:'Barlow',sans-serif;font-weight:700;font-size:15px;
+  color:var(--gold2);letter-spacing:0.5px;
+  display:flex;align-items:center;gap:9px;
+}
+.logo-mark{
+  width:28px;height:28px;background:var(--gold);border-radius:5px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.logo-mark svg{width:16px;height:16px;fill:#07090f;}
+.logo-sub{font-size:9px;font-weight:400;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;}
+.topbar-divider{width:1px;height:20px;background:var(--border);}
+.topbar-meta{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:0.5px;}
+.topbar-meta span{color:var(--text2);}
+
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.nav-pill{
+  padding:4px 11px;border-radius:4px;font-size:11px;font-weight:500;
+  color:var(--text3);cursor:pointer;transition:all 0.15s;
+  border:1px solid transparent;
+}
+.nav-pill:hover{color:var(--text2);background:var(--bg3);}
+.nav-pill.active{color:var(--gold);background:var(--gold-dim);border-color:rgba(201,168,76,0.2);}
+
+/* ── LAYOUT ── */
+#shell{display:flex;flex:1;min-height:0;overflow:hidden;}
+
+/* ── LEFT SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-section{padding:10px 10px 6px;border-bottom:1px solid var(--border);}
+.sb-label{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;padding:0 2px;}
+
+#drop-zone{
+  border:1.5px dashed var(--border2);border-radius:var(--radius);
+  padding:12px 8px;text-align:center;cursor:pointer;
+  transition:all 0.2s;background:var(--gold-glow);position:relative;
+}
+#drop-zone:hover,#drop-zone.drag-over{border-color:var(--gold);background:var(--gold-dim);}
+#drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.dz-icon{width:26px;height:26px;background:var(--bg4);border-radius:5px;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;transition:background 0.2s;}
+#drop-zone:hover .dz-icon{background:var(--gold-dim);}
+.dz-icon svg{width:13px;height:13px;stroke:var(--gold);fill:none;}
+.dz-text{font-size:10.5px;color:var(--text2);line-height:1.4;}
+.dz-text strong{color:var(--gold);font-weight:500;}
+.dz-hint{font-size:9.5px;color:var(--text3);margin-top:2px;}
+
+.sb-files-header{
+  padding:7px 12px 5px;display:flex;align-items:center;justify-content:space-between;
+  font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:1px;
+}
+.sb-badge{background:var(--bg4);color:var(--text3);font-size:9px;padding:1px 5px;border-radius:8px;}
+#file-list{flex:1;overflow-y:auto;padding:3px 6px 8px;}
+.file-item{
+  display:flex;align-items:center;gap:7px;padding:7px 8px;
+  border-radius:var(--radius);cursor:pointer;transition:all 0.12s;
+  border:1px solid transparent;margin-bottom:1px;position:relative;
+}
+.file-item:hover{background:var(--bg3);border-color:var(--border);}
+.file-item.active{background:var(--gold-dim);border-color:rgba(201,168,76,0.25);}
+.file-item.active .file-name{color:var(--gold);}
+.file-icon{width:26px;height:26px;background:var(--bg3);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.file-item.active .file-icon{background:var(--gold-dim);}
+.xlsx-badge{color:#22c55e;}.csv-badge{color:#38bdf8;}
+.file-info{flex:1;min-width:0;}
+.file-name{font-size:11px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.file-meta{font-size:9.5px;color:var(--text3);margin-top:1px;font-family:'IBM Plex Mono',monospace;}
+.file-delete{width:19px;height:19px;display:none;align-items:center;justify-content:center;background:rgba(244,63,94,0.1);border:none;border-radius:3px;cursor:pointer;color:var(--red);flex-shrink:0;transition:background 0.1s;}
+.file-item:hover .file-delete{display:flex;}
+.file-delete:hover{background:rgba(244,63,94,0.2);}
+.file-delete svg{width:11px;height:11px;stroke:currentColor;fill:none;}
+.empty-files{text-align:center;padding:20px 8px;color:var(--text3);font-size:11px;line-height:1.6;}
+
+/* ── MAIN PANEL ── */
+#main{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);min-width:0;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* Viewer states */
+.center-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px;text-align:center;}
+.state-icon{width:50px;height:50px;background:var(--bg3);border-radius:11px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);}
+.state-icon svg{width:22px;height:22px;stroke:var(--gold);fill:none;opacity:0.6;}
+.state-title{font-family:'Barlow',sans-serif;font-size:15px;font-weight:600;color:var(--text2);}
+.state-sub{font-size:11px;color:var(--text3);max-width:240px;line-height:1.6;}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  height: 100vh;
-  display: flex;
-  overflow: hidden;
+.main-header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;min-height:48px;background:var(--bg2);flex-shrink:0;}
+.main-title{font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;color:var(--text);}
+.main-meta{font-size:9.5px;color:var(--text3);margin-top:1px;font-family:'IBM Plex Mono',monospace;}
+.header-actions{display:flex;gap:6px;align-items:center;}
+.btn{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;transition:all 0.13s;font-family:'Inter',sans-serif;}
+.btn:hover{background:var(--bg4);color:var(--text);}
+.btn svg{width:11px;height:11px;stroke:currentColor;fill:none;}
+.btn-gold{background:var(--gold-dim);border-color:rgba(201,168,76,0.25);color:var(--gold);}
+.btn-gold:hover{background:rgba(201,168,76,0.18);}
+
+#tab-bar{display:flex;padding:0 16px;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+#tab-bar::-webkit-scrollbar{display:none;}
+.sheet-tab{padding:7px 12px;font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.13s;user-select:none;}
+.sheet-tab:hover{color:var(--text2);}
+.sheet-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+
+#stats-bar{padding:6px 16px;display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--border);background:var(--bg2);font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace;flex-wrap:wrap;flex-shrink:0;}
+.stat-chip{display:flex;align-items:center;gap:3px;}
+.stat-chip .val{color:var(--gold);font-weight:500;}
+
+#table-container{flex:1;overflow:auto;}
+#data-table{width:100%;border-collapse:collapse;font-size:11px;font-family:'IBM Plex Mono',monospace;min-width:400px;}
+#data-table thead th{position:sticky;top:0;z-index:10;background:var(--bg3);padding:8px 11px;text-align:left;font-size:9.5px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border2);white-space:nowrap;cursor:pointer;user-select:none;transition:background 0.1s;}
+#data-table thead th:hover{background:var(--bg4);}
+#data-table thead th .sort-arrow{margin-left:4px;color:var(--text3);font-size:8px;}
+#data-table tbody tr{transition:background 0.1s;border-bottom:1px solid rgba(30,45,69,0.5);}
+#data-table tbody tr:nth-child(even){background:rgba(17,22,32,0.4);}
+#data-table tbody tr:hover{background:var(--gold-glow) !important;}
+#data-table tbody td{padding:6px 11px;color:var(--text);white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;vertical-align:middle;}
+.cell-dollar{color:var(--green);}
+.cell-negative{color:var(--red);}
+.cell-pct{color:var(--blue);}
+.cell-entity{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;display:inline-block;}
+
+/* ── DASHBOARD PANEL ── */
+#dashboard{
+  width:480px;min-width:480px;
+  background:var(--bg2);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
 }
 
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text3); }
-
-/* ══ LEFT SIDEBAR ══ */
-#sidebar {
-  width: var(--sidebar-w);
-  min-width: var(--sidebar-w);
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+/* ── DASH HEADER ── */
+.dash-header{
+  padding:12px 14px 10px;border-bottom:1px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
 }
-
-.sidebar-header {
-  padding: 16px 14px 13px;
-  border-bottom: 1px solid var(--border);
+.dash-title{
+  font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;color:var(--text);
+  display:flex;align-items:center;gap:8px;
 }
+.dash-icon{width:22px;height:22px;background:var(--gold-dim);border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.dash-icon svg{width:12px;height:12px;stroke:var(--gold);fill:none;}
+.dash-sub{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:1px;}
 
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 15px;
-  color: var(--amber);
-  letter-spacing: -0.3px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;border-bottom:1px solid var(--border);background:var(--border);flex-shrink:0;}
+.kpi-card{
+  background:var(--bg2);padding:10px 12px;
+  display:flex;flex-direction:column;gap:2px;
 }
+.kpi-label{font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;}
+.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:var(--gold);line-height:1.1;}
+.kpi-value.blue{color:var(--blue);}
+.kpi-value.red{color:var(--red);}
+.kpi-value.green{color:var(--green);}
+.kpi-sub{font-size:8.5px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
 
-.logo-icon {
-  width: 30px; height: 30px;
-  background: var(--amber);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+/* ── CATEGORY TOGGLE BAR ── */
+.cat-bar{
+  display:flex;align-items:center;gap:0;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;overflow-x:auto;scrollbar-width:none;
 }
-
-.logo-icon svg { width: 17px; height: 17px; fill: #0f1117; }
-
-.logo-sub {
-  font-family: 'Inter', sans-serif;
-  font-size: 9.5px;
-  font-weight: 400;
-  color: var(--text3);
-  letter-spacing: 0.4px;
-  text-transform: uppercase;
-  margin-top: 2px;
+.cat-bar::-webkit-scrollbar{display:none;}
+.cat-tab{
+  padding:8px 13px;font-size:10.5px;font-weight:600;cursor:pointer;
+  white-space:nowrap;transition:all 0.13s;user-select:none;
+  color:var(--text3);border-bottom:2px solid transparent;
+  display:flex;align-items:center;gap:5px;
+  position:relative;
 }
+.cat-tab:hover{color:var(--text2);background:var(--bg3);}
+.cat-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:var(--gold-glow);}
+.cat-tab .cat-count{font-size:8.5px;font-weight:700;padding:1px 4px;border-radius:6px;background:rgba(0,0,0,0.25);}
+.cat-tab .cat-dot{width:6px;height:6px;border-radius:50%;}
 
-#drop-zone {
-  margin: 11px;
-  border: 1.5px dashed var(--border2);
-  border-radius: var(--radius-lg);
-  padding: 16px 10px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--amber-glow);
-  position: relative;
+/* ── LOAN CATEGORY SECTION ── */
+#loan-scroll{flex:1;overflow-y:auto;padding:0;}
+
+/* Category dropdown section */
+.loan-category{border-bottom:1px solid var(--border);overflow:hidden;}
+.loan-cat-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;cursor:pointer;transition:background 0.13s;
+  user-select:none;background:var(--bg3);
 }
+.loan-cat-header:hover{background:var(--bg4);}
+.loan-cat-left{display:flex;align-items:center;gap:9px;}
+.cat-label-block{display:flex;flex-direction:column;gap:2px;}
+.cat-name{font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.cat-meta{font-size:9.5px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
+.cat-right{display:flex;align-items:center;gap:10px;}
+.cat-total{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;}
+.cat-chevron{transition:transform 0.2s;color:var(--text3);}
+.cat-chevron svg{width:13px;height:13px;stroke:currentColor;fill:none;}
+.loan-category.open .cat-chevron{transform:rotate(180deg);}
 
-#drop-zone:hover, #drop-zone.drag-over { border-color: var(--amber); background: var(--amber-dim); }
-#drop-zone.drag-over { transform: scale(1.01); }
+/* Category type colors */
+.cat-mortgage .cat-name{color:#c084fc;}
+.cat-mortgage .cat-total{color:#c084fc;}
+.cat-mortgage .cat-dot-lg{background:#c084fc;}
 
-#drop-zone input[type="file"] {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+.cat-equipment .cat-name{color:#38bdf8;}
+.cat-equipment .cat-total{color:#38bdf8;}
+.cat-equipment .cat-dot-lg{background:#38bdf8;}
+
+.cat-trailer .cat-name{color:#34d399;}
+.cat-trailer .cat-total{color:#34d399;}
+.cat-trailer .cat-dot-lg{background:#34d399;}
+
+.cat-receivable .cat-name{color:#a78bfa;}
+.cat-receivable .cat-total{color:#a78bfa;}
+.cat-receivable .cat-dot-lg{background:#a78bfa;}
+
+.cat-dot-lg{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+
+/* Loan rows inside dropdown */
+.loan-rows{display:none;}
+.loan-category.open .loan-rows{display:block;}
+
+/* Lender sub-group */
+.lender-group{border-top:1px solid var(--border);}
+.lender-group-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 14px 7px 22px;background:var(--bg2);
+  cursor:pointer;transition:background 0.12s;user-select:none;
 }
+.lender-group-header:hover{background:var(--bg3);}
+.lg-left{display:flex;align-items:center;gap:7px;}
+.lg-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.badge-wintrust{background:rgba(99,102,241,0.15);color:#a5b4fc;}
+.badge-bmo{background:rgba(244,63,94,0.12);color:#fb7185;}
+.badge-webster{background:rgba(34,197,94,0.12);color:#4ade80;}
+.badge-paccar{background:rgba(251,146,60,0.12);color:#fdba74;}
+.badge-nr{background:rgba(167,139,250,0.12);color:#c4b5fd;}
+.lg-count{font-size:9.5px;color:var(--text3);font-family:'IBM Plex Mono',monospace;}
+.lg-total{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;color:var(--text2);}
+.lg-chevron{transition:transform 0.15s;color:var(--text3);}
+.lg-chevron svg{width:11px;height:11px;stroke:currentColor;fill:none;}
+.lender-group.lg-open .lg-chevron{transform:rotate(180deg);}
+.lender-group-rows{display:none;}
+.lender-group.lg-open .lender-group-rows{display:block;}
 
-.drop-icon {
-  width: 30px; height: 30px;
-  background: var(--border);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 7px;
-  transition: background 0.2s;
+/* Individual loan row */
+.loan-row{
+  display:grid;
+  grid-template-columns:55px 1fr 80px 38px 55px;
+  gap:0;
+  padding:6px 14px 6px 30px;
+  border-top:1px solid rgba(30,45,69,0.4);
+  transition:background 0.1s;align-items:center;
 }
+.loan-row:hover{background:var(--gold-glow);}
+.lr-entity{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;display:inline-block;font-family:'IBM Plex Mono',monospace;white-space:nowrap;}
+.entity-Bros{background:rgba(139,92,246,0.12);color:#a78bfa;}
+.entity-Enterprise{background:rgba(56,189,248,0.12);color:#7dd3fc;}
+.entity-WHS{background:rgba(34,197,94,0.12);color:#4ade80;}
+.entity-SAE{background:rgba(251,191,36,0.12);color:#fcd34d;}
+.entity-MH1{background:rgba(236,72,153,0.1);color:#f472b6;}
+.entity-MH2{background:rgba(236,72,153,0.12);color:#f472b6;}
+.entity-MH3{background:rgba(236,72,153,0.14);color:#f472b6;}
+.entity-MH5{background:rgba(236,72,153,0.16);color:#f472b6;}
+.lr-desc{font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px;}
+.lr-balance{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;color:var(--green);text-align:right;white-space:nowrap;}
+.lr-balance.is-asset{color:var(--blue);}
+.lr-rate{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--blue);text-align:center;}
+.lr-maturity{font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-align:right;white-space:nowrap;}
+.mat-urgent{color:var(--red);font-weight:600;}
+.mat-warn{color:var(--gold);}
+.mat-ok{color:var(--text2);}
+.mat-long{color:var(--text3);}
 
-#drop-zone:hover .drop-icon { background: var(--amber-dim); }
-.drop-icon svg { width: 15px; height: 15px; stroke: var(--amber); fill: none; }
-.drop-text { font-size: 11.5px; color: var(--text2); line-height: 1.4; }
-.drop-text strong { color: var(--amber); font-weight: 500; }
-.drop-hint { font-size: 10px; color: var(--text3); margin-top: 3px; }
-
-.files-label {
-  padding: 9px 14px 5px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* Category footer total */
+.cat-subtotal{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 14px 6px 22px;background:var(--bg3);
+  border-top:1px solid var(--border2);
 }
+.cst-label{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:0.5px;}
+.cst-val{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;}
 
-.file-count-badge {
-  background: var(--border);
-  color: var(--text2);
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 10px;
+/* Grand total footer */
+.dash-footer{
+  border-top:1px solid var(--border2);background:var(--bg3);
+  padding:10px 14px;flex-shrink:0;
 }
+.df-row{display:flex;align-items:center;justify-content:space-between;}
+.df-label{font-family:'Barlow',sans-serif;font-size:11.5px;font-weight:700;color:var(--text2);}
+.df-amount{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:700;color:var(--gold);}
+.df-sub{font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace;margin-top:3px;}
 
-#file-list { flex: 1; overflow-y: auto; padding: 3px 7px 8px; }
-
-.file-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 9px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all 0.15s;
-  border: 1px solid transparent;
-  margin-bottom: 2px;
-  position: relative;
+/* Notes Receivable special */
+.nr-banner{
+  padding:10px 14px;background:rgba(167,139,250,0.06);border-bottom:1px solid var(--border);
 }
-
-.file-item:hover { background: var(--bg3); border-color: var(--border); }
-.file-item.active { background: var(--amber-dim); border-color: rgba(245,158,11,0.3); }
-.file-item.active .file-name { color: var(--amber); }
-
-.file-icon {
-  width: 29px; height: 29px;
-  background: var(--bg3);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.file-item.active .file-icon { background: var(--amber-dim); }
-.xlsx-badge { color: #10b981; }
-.csv-badge  { color: #3b82f6; }
-.file-info  { flex: 1; min-width: 0; }
-
-.file-name {
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.file-meta {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 1px;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.file-delete {
-  width: 21px; height: 21px;
-  display: none;
-  align-items: center; justify-content: center;
-  background: rgba(239,68,68,0.1);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: var(--red);
-  flex-shrink: 0;
-  transition: background 0.15s;
-}
-
-.file-item:hover .file-delete { display: flex; }
-.file-delete:hover { background: rgba(239,68,68,0.2); }
-.file-delete svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
-
-.empty-files {
-  text-align: center;
-  padding: 22px 10px;
-  color: var(--text3);
-  font-size: 11.5px;
-  line-height: 1.6;
-}
-
-/* ══ CENTER: DATA VIEWER ══ */
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--bg);
-  min-width: 0;
-}
-
-.main-header {
-  padding: 12px 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 52px;
-  background: var(--bg2);
-  flex-shrink: 0;
-}
-
-.main-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text);
-}
-
-.main-meta {
-  font-size: 10.5px;
-  color: var(--text3);
-  margin-top: 1px;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.header-actions { display: flex; gap: 7px; align-items: center; }
-
-.btn {
-  display: flex; align-items: center; gap: 5px;
-  padding: 5px 11px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border2);
-  background: var(--bg3);
-  color: var(--text2);
-  font-size: 11.5px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  font-family: 'Inter', sans-serif;
-}
-
-.btn:hover { background: var(--bg4); color: var(--text); }
-.btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
-.btn-amber { background: var(--amber-dim); border-color: rgba(245,158,11,0.3); color: var(--amber); }
-.btn-amber:hover { background: rgba(245,158,11,0.2); }
-
-#tab-bar {
-  display: flex;
-  padding: 0 18px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg2);
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex-shrink: 0;
-}
-
-#tab-bar::-webkit-scrollbar { display: none; }
-
-.sheet-tab {
-  padding: 8px 14px;
-  font-size: 11.5px;
-  font-weight: 500;
-  color: var(--text3);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-  transition: all 0.15s;
-  user-select: none;
-}
-
-.sheet-tab:hover { color: var(--text2); }
-.sheet-tab.active { color: var(--amber); border-bottom-color: var(--amber); }
-
-#stats-bar {
-  padding: 7px 18px;
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg2);
-  font-size: 10.5px;
-  color: var(--text3);
-  font-family: 'IBM Plex Mono', monospace;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-}
-
-.stat-chip { display: flex; align-items: center; gap: 4px; }
-.stat-chip .val { color: var(--amber); font-weight: 500; }
-
-#table-container { flex: 1; overflow: auto; }
-
-#data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11.5px;
-  font-family: 'IBM Plex Mono', monospace;
-  min-width: 500px;
-}
-
-#data-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--bg3);
-  padding: 9px 13px;
-  text-align: left;
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--amber);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border2);
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.1s;
-}
-
-#data-table thead th:hover { background: var(--bg4); }
-#data-table thead th .sort-arrow { margin-left: 4px; color: var(--text3); font-size: 9px; }
-
-#data-table tbody tr { transition: background 0.1s; border-bottom: 1px solid rgba(42,45,54,0.5); }
-#data-table tbody tr:nth-child(even) { background: rgba(30,33,40,0.4); }
-#data-table tbody tr:hover { background: var(--amber-glow) !important; }
-
-#data-table tbody td {
-  padding: 7px 13px;
-  color: var(--text);
-  white-space: nowrap;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  vertical-align: middle;
-}
-
-.cell-dollar { color: var(--green); }
-.cell-negative { color: var(--red); }
-.cell-pct { color: var(--blue); }
-
-.cell-entity {
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-.center-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 40px;
-  text-align: center;
-}
-
-.state-icon {
-  width: 52px; height: 52px;
-  background: var(--bg3);
-  border-radius: 13px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border);
-}
-
-.state-icon svg { width: 22px; height: 22px; stroke: var(--amber); fill: none; opacity: 0.7; }
-.state-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 600; color: var(--text2); }
-.state-sub { font-size: 11.5px; color: var(--text3); max-width: 260px; line-height: 1.6; }
-
-/* ══ RIGHT: LOAN INDEX ══ */
-#loan-index {
-  width: var(--index-w);
-  min-width: var(--index-w);
-  background: var(--bg2);
-  border-left: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.index-header {
-  padding: 12px 14px 11px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.index-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: 13.5px;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.index-title-icon {
-  width: 24px; height: 24px;
-  background: var(--amber-dim);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.index-title-icon svg { width: 13px; height: 13px; stroke: var(--amber); fill: none; }
-.index-sub { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
-
-/* Summary cards */
-.index-summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.summary-card {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 8px 10px;
-}
-
-.summary-label {
-  font-size: 9.5px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 3px;
-}
-
-.summary-value {
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-  color: var(--amber);
-  line-height: 1.2;
-}
-
-.summary-value.blue { color: #60a5fa; }
-.summary-value.red  { color: var(--red); }
-
-/* Lender filter tabs */
-.index-filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.lender-tab {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  border: 1px solid var(--border2);
-  background: transparent;
-  color: var(--text3);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-family: 'Inter', sans-serif;
-}
-
-.lender-tab:hover { color: var(--text2); background: var(--bg3); }
-
-.lender-tab.active { color: #0f1117; border-color: transparent; font-weight: 600; }
-.lender-tab.active-all { background: var(--bg4); border-color: var(--border2); color: var(--text); }
-
-.tab-count {
-  font-size: 9px;
-  font-weight: 700;
-  padding: 1px 5px;
-  border-radius: 8px;
-  background: rgba(0,0,0,0.18);
-}
-
-/* Lender colors */
-.lt-wintrust.active { background: #6366f1; }
-.lt-bmo.active      { background: #ef4444; }
-.lt-webster.active  { background: #10b981; }
-.lt-paccar.active   { background: #f59e0b; }
-.lt-nr.active       { background: #8b5cf6; }
-
-/* Lender badges */
-.lender-badge {
-  font-size: 9.5px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  display: inline-block;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.badge-wintrust { background: rgba(99,102,241,0.15);  color: #a5b4fc; }
-.badge-bmo      { background: rgba(239,68,68,0.15);   color: #fca5a5; }
-.badge-webster  { background: rgba(16,185,129,0.15);  color: #6ee7b7; }
-.badge-paccar   { background: rgba(245,158,11,0.15);  color: #fcd34d; }
-.badge-nr       { background: rgba(139,92,246,0.15);  color: #c4b5fd; }
-
-/* Entity badges */
-.entity-badge {
-  font-size: 9px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  display: inline-block;
-  white-space: nowrap;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.entity-Bros       { background: rgba(139,92,246,0.15); color: #a78bfa; }
-.entity-Enterprise { background: rgba(59,130,246,0.15); color: #60a5fa; }
-.entity-WHS        { background: rgba(16,185,129,0.15); color: #34d399; }
-.entity-SAE        { background: rgba(245,158,11,0.15); color: #fbbf24; }
-.entity-MH1        { background: rgba(236,72,153,0.12); color: #f472b6; }
-.entity-MH2        { background: rgba(236,72,153,0.14); color: #f472b6; }
-.entity-MH3        { background: rgba(236,72,153,0.16); color: #f472b6; }
-.entity-MH5        { background: rgba(236,72,153,0.18); color: #f472b6; }
-
-/* Loan index table area */
-.index-table-wrap {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 12px 14px;
-}
-
-/* Grand total bar */
-.grand-total-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 9px 12px;
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  margin-bottom: 12px;
-}
-
-.grand-total-label { font-family: 'Syne', sans-serif; font-size: 11.5px; font-weight: 700; color: var(--text2); }
-.grand-total-amount { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 700; color: var(--amber); }
-
-/* Lender section */
-.lender-section { margin-bottom: 16px; }
-
-.lender-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 10px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius) var(--radius) 0 0;
-  border-bottom: none;
-}
-
-.lender-section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 11.5px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.lender-section-total { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; }
-
-/* Loan table */
-.loan-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 11px;
-  border: 1px solid var(--border);
-  border-radius: 0 0 var(--radius) var(--radius);
-  overflow: hidden;
-  table-layout: fixed;
-}
-
-.loan-table thead th {
-  background: var(--bg4);
-  padding: 6px 8px;
-  text-align: left;
-  font-size: 9.5px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  transition: background 0.1s;
-  border-bottom: 1px solid var(--border2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.loan-table thead th:hover { background: var(--bg3); color: var(--text2); }
-.loan-table thead th.sort-asc::after  { content: ' ▲'; color: var(--amber); font-size: 8px; }
-.loan-table thead th.sort-desc::after { content: ' ▼'; color: var(--amber); font-size: 8px; }
-
-/* Column widths */
-.col-entity  { width: 60px; }
-.col-desc    { width: 120px; }
-.col-balance { width: 90px; }
-.col-rate    { width: 42px; }
-.col-maturity{ width: 66px; }
-.col-contact { width: 80px; }
-
-.loan-table tbody tr { border-bottom: 1px solid rgba(42,45,54,0.6); transition: background 0.1s; }
-.loan-table tbody tr:last-child { border-bottom: none; }
-.loan-table tbody tr:nth-child(even) { background: rgba(30,33,40,0.35); }
-.loan-table tbody tr:hover { background: var(--amber-glow) !important; }
-
-.loan-table tbody td {
-  padding: 6px 8px;
-  color: var(--text);
-  vertical-align: middle;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.td-desc { color: var(--text2); font-size: 10.5px; }
-.td-balance { color: var(--green); font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 10.5px; }
-.td-balance.receivable { color: #60a5fa; }
-.td-rate { color: #60a5fa; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; }
-.td-maturity { font-family: 'IBM Plex Mono', monospace; font-size: 10px; }
-.td-contact { font-size: 10px; color: var(--text3); }
-
-.maturity-urgent { color: var(--red);   font-weight: 600; }
-.maturity-warn   { color: var(--amber); font-weight: 500; }
-.maturity-ok     { color: var(--text2); }
-.maturity-long   { color: var(--text3); }
-
-/* Tfoot */
-.loan-table tfoot tr { background: var(--bg3) !important; border-top: 1px solid var(--border2); }
-.loan-table tfoot td { padding: 6px 8px; font-weight: 600; font-size: 10.5px; }
-.loan-table tfoot .td-balance { color: var(--amber); font-weight: 700; font-size: 11px; }
-
-/* Notes Receivable */
-.nr-info-box {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  margin-bottom: 12px;
-}
-
-.nr-info-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #c4b5fd;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.nr-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-
-.nr-stat {
-  background: rgba(139,92,246,0.08);
-  border: 1px solid rgba(139,92,246,0.15);
-  border-radius: 6px;
-  padding: 7px 9px;
-}
-
-.nr-stat-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
-.nr-stat-value { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; color: #c4b5fd; }
+.nr-banner-title{font-size:10px;font-weight:700;color:#c4b5fd;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.nr-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.nr-stat{background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.15);border-radius:var(--radius);padding:6px 8px;}
+.nr-stat-label{font-size:8.5px;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;}
+.nr-stat-value{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:#c4b5fd;}
 
 /* Toast */
-#toast {
-  position: fixed;
-  bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--bg3);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  padding: 8px 15px;
-  font-size: 12px;
-  color: var(--text);
-  opacity: 0;
-  transition: all 0.25s;
-  z-index: 9999;
-  pointer-events: none;
-  white-space: nowrap;
-}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 14px;font-size:11.5px;color:var(--text);opacity:0;transition:all 0.22s;z-index:9999;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.success{border-color:rgba(34,197,94,0.4);color:var(--green);}
+#toast.error{border-color:rgba(244,63,94,0.4);color:var(--red);}
 
-#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-#toast.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
-#toast.error   { border-color: rgba(239,68,68,0.4);   color: var(--red); }
+/* Lender filter strip above */
+.lender-strip{display:flex;align-items:center;gap:6px;padding:7px 14px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none;flex-wrap:wrap;}
+.lender-strip::-webkit-scrollbar{display:none;}
+.ls-chip{
+  padding:3px 9px;border-radius:12px;font-size:10px;font-weight:600;cursor:pointer;
+  transition:all 0.13s;white-space:nowrap;border:1px solid var(--border2);
+  background:transparent;color:var(--text3);display:flex;align-items:center;gap:4px;
+}
+.ls-chip:hover{color:var(--text2);background:var(--bg3);}
+.ls-chip.active{color:#0d1117;border-color:transparent;font-weight:700;}
+.ls-chip.all-active{background:var(--bg4);border-color:var(--border2);color:var(--text);}
+.ls-chip .lc{font-size:8px;font-weight:700;padding:1px 4px;border-radius:5px;background:rgba(0,0,0,0.2);}
+.chip-wintrust.active{background:#6366f1;}
+.chip-bmo.active{background:#f43f5e;}
+.chip-webster.active{background:#22c55e;}
+.chip-paccar.active{background:#fb923c;}
+.chip-nr.active{background:#a78bfa;}
 </style>
 </head>
 <body>
-
-<!-- ══ LEFT: SIDEBAR ══ -->
-<aside id="sidebar">
-  <div class="sidebar-header">
+<!-- TOP NAV -->
+<header id="topbar">
+  <div class="topbar-left">
     <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 16 16"><path d="M2 12L8 2l6 10H2z"/><rect x="4" y="9" width="8" height="1.5" rx="0.5"/></svg>
-      </div>
-      <div>
-        <div>Meiborg Finance Hub</div>
-        <div class="logo-sub">Debt Schedule Intelligence</div>
-      </div>
+      <div class="logo-mark"><svg viewBox="0 0 16 16"><path d="M2 12L8 2l6 10H2z"/><rect x="4" y="9" width="8" height="1.5" rx="0.5"/></svg></div>
+      <div><div>Meiborg Finance Hub</div><div class="logo-sub">Debt Schedule Intelligence</div></div>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="topbar-meta">As of <span>Jan 31, 2026</span> &nbsp;·&nbsp; Meiborg Bros. Inc</div>
+  </div>
+  <div class="topbar-right">
+    <div class="nav-pill active" id="nav-dashboard" onclick="switchView('dashboard')">Dashboard</div>
+    <div class="nav-pill" id="nav-raw" onclick="switchView('raw')">Raw Data</div>
+  </div>
+</header>
+
+<div id="shell">
+<!-- LEFT SIDEBAR -->
+<aside id="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Upload Schedule</div>
+    <div id="drop-zone">
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv" multiple>
+      <div class="dz-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></div>
+      <div class="dz-text"><strong>Drop files here</strong><br>or click to browse</div>
+      <div class="dz-hint">.xlsx · .xls · .csv</div>
     </div>
   </div>
-
-  <div id="drop-zone">
-    <input type="file" id="file-input" accept=".xlsx,.xls,.csv" multiple>
-    <div class="drop-icon">
-      <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-    </div>
-    <div class="drop-text"><strong>Drop files here</strong><br>or click to browse</div>
-    <div class="drop-hint">.xlsx · .xls · .csv supported</div>
-  </div>
-
-  <div class="files-label">
-    Files <span class="file-count-badge" id="file-count">0</span>
-  </div>
-
+  <div class="sb-files-header">Files <span class="sb-badge" id="file-count">0</span></div>
   <div id="file-list">
-    <div class="empty-files" id="empty-files">
-      No files uploaded yet.<br>Drop a debt schedule above to get started.
-    </div>
+    <div class="empty-files" id="empty-files">No files uploaded.<br>Drop a debt schedule above.</div>
   </div>
 </aside>
 
-<!-- ══ CENTER: DATA VIEWER ══ -->
+<!-- MAIN CONTENT -->
 <main id="main">
-  <div id="viewer-empty" class="center-state" style="flex:1;display:flex;">
-    <div class="state-icon">
-      <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+  <!-- DASHBOARD VIEW -->
+  <div id="view-dashboard" style="display:flex;flex:1;min-height:0;overflow:hidden;">
+    <!-- Empty state (center) -->
+    <div id="viewer-empty" class="center-state" style="flex:1;">
+      <div class="state-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+      <div class="state-title">Debt Schedule Dashboard</div>
+      <div class="state-sub">Upload a file to populate the dashboard, or browse the built-in loan index on the right.</div>
     </div>
-    <div class="state-title">Select a file to view</div>
-    <div class="state-sub">Upload a debt schedule and click it in the sidebar to explore the data.</div>
+
+    <!-- Raw table viewer (shown when file active) -->
+    <div id="viewer-content" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div class="main-header">
+        <div>
+          <div class="main-title" id="active-file-name">—</div>
+          <div class="main-meta" id="active-file-meta"></div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-gold" onclick="exportCSV()">
+            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Export CSV
+          </button>
+        </div>
+      </div>
+      <div id="tab-bar"></div>
+      <div id="stats-bar"></div>
+      <div id="table-container"><table id="data-table"><thead></thead><tbody></tbody></table></div>
+    </div>
+
+    <!-- DASHBOARD PANEL (right side) -->
+    <aside id="dashboard">
+      <div class="dash-header">
+        <div>
+          <div class="dash-title">
+            <div class="dash-icon"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 3h18v18H3z M3 9h18 M3 15h18 M9 3v18 M15 3v18"/></svg></div>
+            Loan Portfolio
+          </div>
+          <div class="dash-sub" id="dash-sub-line">Meiborg Bros Inc · 35 instruments</div>
+        </div>
+      </div>
+
+      <!-- KPI Row -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Debt</div>
+          <div class="kpi-value" id="kpi-total"></div>
+          <div class="kpi-sub">outstanding</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Instruments</div>
+          <div class="kpi-value blue" id="kpi-count"></div>
+          <div class="kpi-sub">active loans</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Rate</div>
+          <div class="kpi-value" id="kpi-rate"></div>
+          <div class="kpi-sub">weighted avg</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Next Maturity</div>
+          <div class="kpi-value red" id="kpi-maturity" style="font-size:12px;"></div>
+          <div class="kpi-sub">earliest due</div>
+        </div>
+      </div>
+
+      <!-- Lender filter strip -->
+      <div class="lender-strip" id="lender-strip"></div>
+
+      <!-- Loan Categories scrollable area -->
+      <div id="loan-scroll" style="flex:1;overflow-y:auto;"></div>
+
+      <!-- Footer total -->
+      <div class="dash-footer">
+        <div class="df-row">
+          <div class="df-label">Grand Total Outstanding</div>
+          <div class="df-amount" id="df-total"></div>
+        </div>
+        <div class="df-sub" id="df-sub"></div>
+      </div>
+    </aside>
   </div>
 
-  <div id="viewer-content" style="display:none;flex-direction:column;height:100%;overflow:hidden;">
-    <div class="main-header">
-      <div>
-        <div class="main-title" id="active-file-name">—</div>
-        <div class="main-meta" id="active-file-meta"></div>
-      </div>
-      <div class="header-actions">
-        <button class="btn btn-amber" onclick="exportCSV()">
-          <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          Export CSV
-        </button>
-      </div>
-    </div>
-    <div id="tab-bar"></div>
-    <div id="stats-bar"></div>
-    <div id="table-container">
-      <table id="data-table"><thead></thead><tbody></tbody></table>
+  <!-- RAW DATA VIEW -->
+  <div id="view-raw" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="center-state">
+      <div class="state-icon"><svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="state-title">Raw Data Viewer</div>
+      <div class="state-sub">Upload a debt schedule file and it will appear here for detailed review.</div>
     </div>
   </div>
 </main>
-
-<!-- ══ RIGHT: LOAN INDEX ══ -->
-<aside id="loan-index">
-  <div class="index-header">
-    <div class="index-title">
-      <div class="index-title-icon">
-        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-      </div>
-      Loan Index
-    </div>
-    <div class="index-sub">Meiborg Bros Inc · As of Jan 31, 2026</div>
-  </div>
-  <div class="index-summary" id="index-summary"></div>
-  <div class="index-filter-bar" id="lender-tabs"></div>
-  <div class="index-table-wrap" id="index-table-wrap"></div>
-</aside>
+</div>
 
 <div id="toast"></div>
-
 <script>
-// ══════════════════════════════════════════
-// HARDCODED LOAN DATA
-// ══════════════════════════════════════════
-const LOANS = [
-  // WINTRUST
-  { lender:'Wintrust', entity:'Bros',       desc:'SBA Mortgage — 1122 Milford Rd',          balance:1574131.66, rate:3.61, maturity:'2046-04', contact:'Sinead Murphy' },
-  // BMO
-  { lender:'BMO',      entity:'Bros',       desc:'2019 Kenworth T680',                       balance:8901.59,    rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2019 Kenworth T680',                       balance:8901.59,    rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2020 Kenworth T680',                       balance:15664.29,   rate:4.49, maturity:'2025-09', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2020 Kenworth T680',                       balance:13355.81,   rate:4.49, maturity:'2025-06', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2021 Kenworth T680',                       balance:29268.47,   rate:3.99, maturity:'2026-06', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2021 Kenworth T680',                       balance:29268.47,   rate:3.99, maturity:'2026-06', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2022 Kenworth W990',                       balance:64498.79,   rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2022 Kenworth W990',                       balance:64498.79,   rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2022 Kenworth W990',                       balance:64498.79,   rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
-  { lender:'BMO',      entity:'Bros',       desc:'2023 Kenworth W990',                       balance:108686.49,  rate:6.35, maturity:'2028-10', contact:'Tony Hagen' },
-  // WEBSTER
-  { lender:'Webster',  entity:'Bros',       desc:'2022 Utility 3000R 53ft Reefer',           balance:28611.87,   rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
-  { lender:'Webster',  entity:'Bros',       desc:'2022 Utility 3000R 53ft Reefer',           balance:28611.87,   rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
-  { lender:'Webster',  entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van',      balance:19014.59,   rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
-  { lender:'Webster',  entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van',      balance:19014.59,   rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
-  { lender:'Webster',  entity:'Bros',       desc:'2022 Utility 4000DX 53ft Flatbed',         balance:35064.62,   rate:5.50, maturity:'2027-10', contact:'Michael Weinberger' },
-  { lender:'Webster',  entity:'Bros',       desc:'2023 Utility 4000DX 53ft Flatbed',         balance:41250.00,   rate:6.25, maturity:'2028-12', contact:'Michael Weinberger' },
-  // PACCAR
-  { lender:'Paccar',   entity:'Bros',       desc:'2021 Kenworth T680',                       balance:38214.32,   rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'Bros',       desc:'2021 Kenworth T680',                       balance:38214.32,   rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'Bros',       desc:'2021 Kenworth T680',                       balance:38214.32,   rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'Bros',       desc:'2022 Kenworth T680',                       balance:52318.44,   rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'Bros',       desc:'2022 Kenworth T680',                       balance:52318.44,   rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'Bros',       desc:'2022 Kenworth T680',                       balance:52318.44,   rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH1',        desc:'2022 Kenworth T680',                       balance:52318.44,   rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH1',        desc:'2022 Kenworth T680',                       balance:52318.44,   rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH2',        desc:'2023 Kenworth T680',                       balance:71445.18,   rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH2',        desc:'2023 Kenworth T680',                       balance:71445.18,   rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH3',        desc:'2023 Kenworth T680',                       balance:71445.18,   rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH3',        desc:'2023 Kenworth T680',                       balance:71445.18,   rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH5',        desc:'2023 Kenworth W990',                       balance:84512.67,   rate:5.49, maturity:'2028-09', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'MH5',        desc:'2023 Kenworth W990',                       balance:84512.67,   rate:5.49, maturity:'2028-09', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'SAE',        desc:'2024 Kenworth T680',                       balance:98744.22,   rate:5.99, maturity:'2029-04', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'SAE',        desc:'2024 Kenworth T680',                       balance:98744.22,   rate:5.99, maturity:'2029-04', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'WHS',        desc:'2024 Kenworth W990',                       balance:112388.55,  rate:6.25, maturity:'2029-07', contact:'Jerry Brown' },
-  { lender:'Paccar',   entity:'WHS',        desc:'2024 Kenworth W990',                       balance:112388.55,  rate:6.25, maturity:'2029-07', contact:'Jerry Brown' },
+// ═══════════════════════════════════════
+// LOAN DATA — ORGANIZED BY CATEGORY
+// ═══════════════════════════════════════
+const CATEGORIES = [
+  {
+    id:'mortgage', label:'Real Estate / Mortgage', type:'cat-mortgage',
+    color:'#c084fc', dotColor:'#c084fc',
+    groups:[
+      { lender:'Wintrust', badge:'badge-wintrust', loans:[
+        { entity:'Bros', desc:'SBA Mortgage — 1122 Milford Rd', balance:1574131.66, rate:3.61, maturity:'2046-04', contact:'Sinead Murphy' }
+      ]}
+    ]
+  },
+  {
+    id:'equipment', label:'Equipment / Trucks', type:'cat-equipment',
+    color:'#38bdf8', dotColor:'#38bdf8',
+    groups:[
+      { lender:'BMO', badge:'badge-bmo', loans:[
+        { entity:'Bros', desc:'2019 Kenworth T680', balance:8901.59, rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2019 Kenworth T680', balance:8901.59, rate:5.24, maturity:'2025-03', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2020 Kenworth T680', balance:15664.29, rate:4.49, maturity:'2025-09', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2020 Kenworth T680', balance:13355.81, rate:4.49, maturity:'2025-06', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2021 Kenworth T680', balance:29268.47, rate:3.99, maturity:'2026-06', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2021 Kenworth T680', balance:29268.47, rate:3.99, maturity:'2026-06', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2022 Kenworth W990', balance:64498.79, rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2022 Kenworth W990', balance:64498.79, rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2022 Kenworth W990', balance:64498.79, rate:4.00, maturity:'2027-05', contact:'Tony Hagen' },
+        { entity:'Bros', desc:'2023 Kenworth W990', balance:108686.49, rate:6.35, maturity:'2028-10', contact:'Tony Hagen' }
+      ]},
+      { lender:'Paccar', badge:'badge-paccar', loans:[
+        { entity:'Bros', desc:'2021 Kenworth T680', balance:38214.32, rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
+        { entity:'Bros', desc:'2021 Kenworth T680', balance:38214.32, rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
+        { entity:'Bros', desc:'2021 Kenworth T680', balance:38214.32, rate:2.99, maturity:'2026-05', contact:'Jerry Brown' },
+        { entity:'Bros', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
+        { entity:'Bros', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
+        { entity:'Bros', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
+        { entity:'MH1', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
+        { entity:'MH1', desc:'2022 Kenworth T680', balance:52318.44, rate:3.49, maturity:'2027-03', contact:'Jerry Brown' },
+        { entity:'MH2', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
+        { entity:'MH2', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
+        { entity:'MH3', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
+        { entity:'MH3', desc:'2023 Kenworth T680', balance:71445.18, rate:4.99, maturity:'2028-06', contact:'Jerry Brown' },
+        { entity:'MH5', desc:'2023 Kenworth W990', balance:84512.67, rate:5.49, maturity:'2028-09', contact:'Jerry Brown' },
+        { entity:'MH5', desc:'2023 Kenworth W990', balance:84512.67, rate:5.49, maturity:'2028-09', contact:'Jerry Brown' },
+        { entity:'SAE', desc:'2024 Kenworth T680', balance:98744.22, rate:5.99, maturity:'2029-04', contact:'Jerry Brown' },
+        { entity:'SAE', desc:'2024 Kenworth T680', balance:98744.22, rate:5.99, maturity:'2029-04', contact:'Jerry Brown' },
+        { entity:'WHS', desc:'2024 Kenworth W990', balance:112388.55, rate:6.25, maturity:'2029-07', contact:'Jerry Brown' },
+        { entity:'WHS', desc:'2024 Kenworth W990', balance:112388.55, rate:6.25, maturity:'2029-07', contact:'Jerry Brown' }
+      ]}
+    ]
+  },
+  {
+    id:'trailer', label:'Trailer / Dry Van / Reefer', type:'cat-trailer',
+    color:'#34d399', dotColor:'#34d399',
+    groups:[
+      { lender:'Webster', badge:'badge-webster', loans:[
+        { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
+        { entity:'Bros', desc:'2022 Utility 3000R 53ft Reefer', balance:28611.87, rate:5.35, maturity:'2027-08', contact:'Michael Weinberger' },
+        { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
+        { entity:'Enterprise', desc:'2021 Hyundai Translead 53ft Dry Van', balance:19014.59, rate:3.85, maturity:'2026-11', contact:'Michael Weinberger' },
+        { entity:'Bros', desc:'2022 Utility 4000DX 53ft Flatbed', balance:35064.62, rate:5.50, maturity:'2027-10', contact:'Michael Weinberger' },
+        { entity:'Bros', desc:'2023 Utility 4000DX 53ft Flatbed', balance:41250.00, rate:6.25, maturity:'2028-12', contact:'Michael Weinberger' }
+      ]}
+    ]
+  },
+  {
+    id:'receivable', label:'Notes Receivable (Assets)', type:'cat-receivable',
+    color:'#a78bfa', dotColor:'#a78bfa', isAsset:true,
+    groups:[
+      { lender:'Internal', badge:'badge-nr', loans:[
+        { entity:'Various', desc:'Owner-Operator Lease-Purchase Program (31+ operators)', balance:null, rate:null, maturity:null, weekly:'$307–$997/wk' },
+        { entity:'External', desc:'Rockford Brake Manufacturing — Promissory Note', balance:100000, rate:null, maturity:null }
+      ]}
+    ]
+  }
 ];
 
-const NOTES_RECEIVABLE = [
-  { entity:'Various',  desc:'Owner-Operator Lease-Purchase Program (31+ operators)', balance:null,   weekly:'$307–$997/wk', contact:'Internal' },
-  { entity:'External', desc:'Rockford Brake Manufacturing — Promissory Note',        balance:100000, weekly:null,           contact:'Internal' },
+// ═══════════════════════════════════════
+// LENDER FILTER CONFIG
+// ═══════════════════════════════════════
+const LENDER_CHIPS = [
+  { id:'All', label:'All', cls:'', lenders:['Wintrust','BMO','Webster','Paccar','Internal'] },
+  { id:'Wintrust', label:'Wintrust', cls:'chip-wintrust', lenders:['Wintrust'] },
+  { id:'BMO', label:'BMO', cls:'chip-bmo', lenders:['BMO'] },
+  { id:'Webster', label:'Webster', cls:'chip-webster', lenders:['Webster'] },
+  { id:'Paccar', label:'Paccar', cls:'chip-paccar', lenders:['Paccar'] },
+  { id:'NR', label:'Notes Recv.', cls:'chip-nr', lenders:['Internal'] },
 ];
 
-const LENDER_CONFIG = {
-  Wintrust: { label:'Wintrust',         cls:'lt-wintrust', badge:'badge-wintrust', color:'#a5b4fc' },
-  BMO:      { label:'BMO Bank',         cls:'lt-bmo',      badge:'badge-bmo',      color:'#fca5a5' },
-  Webster:  { label:'Webster Capital',  cls:'lt-webster',  badge:'badge-webster',  color:'#6ee7b7' },
-  Paccar:   { label:'Paccar Financial', cls:'lt-paccar',   badge:'badge-paccar',   color:'#fcd34d' },
-  NR:       { label:'Notes Receivable', cls:'lt-nr',       badge:'badge-nr',       color:'#c4b5fd' },
-};
-
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════
-let files = [];
-let activeFileId = null;
-let activeSheet  = 0;
-let sortState    = { col: -1, asc: true };
+// ═══════════════════════════════════════
+let files = [], activeFileId = null, activeSheet = 0, sortState = {col:-1,asc:true};
 let activeLender = 'All';
-let loanSortCol  = null;
-let loanSortAsc  = true;
+let openCategories = new Set(['mortgage','equipment','trailer']);
+let openLenderGroups = new Set();
+let currentView = 'dashboard';
+const STORAGE = 'mfh_files_v4';
 
-const STORAGE_FILES = 'mfh_files_v3';
-
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 // INIT
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
   loadFiles();
   setupDrop();
   document.getElementById('file-input').addEventListener('change', e => handleFiles(e.target.files));
-  renderLoanIndex();
+  renderDashboard();
 });
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════
+function switchView(v) {
+  currentView = v;
+  document.getElementById('view-dashboard').style.display = v === 'dashboard' ? 'flex' : 'none';
+  document.getElementById('view-raw').style.display = v === 'raw' ? 'flex' : 'none';
+  document.getElementById('nav-dashboard').className = 'nav-pill' + (v === 'dashboard' ? ' active' : '');
+  document.getElementById('nav-raw').className = 'nav-pill' + (v === 'raw' ? ' active' : '');
+}
+
+// ═══════════════════════════════════════
 // MATURITY HELPERS
-// ══════════════════════════════════════════
-function monthsDiff(maturity) {
-  if (!maturity || maturity === '--') return Infinity;
-  const [y, m] = maturity.split('-').map(Number);
-  return (y - 2026) * 12 + (m - 1);
+// ═══════════════════════════════════════
+function monthsDiff(m) {
+  if (!m) return Infinity;
+  const [y,mo] = m.split('-').map(Number);
+  return (y-2026)*12+(mo-1);
+}
+function matCls(m) {
+  const d = monthsDiff(m);
+  if (d===Infinity) return 'mat-long';
+  if (d<=12) return 'mat-urgent';
+  if (d<=24) return 'mat-warn';
+  if (d<=60) return 'mat-ok';
+  return 'mat-long';
+}
+function fmtMat(m) {
+  if (!m) return '<span class="mat-long">—</span>';
+  const [y,mo] = m.split('-');
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const flag = matCls(m)==='mat-urgent' ? ' ⚑' : '';
+  return '<span class="'+matCls(m)+'">'+mon[parseInt(mo,10)-1]+' '+y+flag+'</span>';
+}
+function findNextMat() {
+  let best = null;
+  CATEGORIES.forEach(cat => {
+    if (cat.isAsset) return;
+    cat.groups.forEach(g => g.loans.forEach(l => {
+      if (l.maturity) {
+        const d = monthsDiff(l.maturity);
+        if (d>=0 && (best===null || d<monthsDiff(best))) best=l.maturity;
+      }
+    }));
+  });
+  return best;
 }
 
-function maturityClass(maturity) {
-  const d = monthsDiff(maturity);
-  if (d === Infinity) return 'maturity-long';
-  if (d <= 12)  return 'maturity-urgent';
-  if (d <= 24)  return 'maturity-warn';
-  if (d <= 60)  return 'maturity-ok';
-  return 'maturity-long';
+// ═══════════════════════════════════════
+// DASHBOARD RENDER
+// ═══════════════════════════════════════
+function renderDashboard() {
+  renderKPIs();
+  renderLenderStrip();
+  renderLoanCategories();
+  renderFooter();
 }
 
-function formatMaturity(maturity) {
-  if (!maturity || maturity === '--') return '<span class="maturity-long">—</span>';
-  const [y, m] = maturity.split('-');
-  const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const label = mon[parseInt(m,10)-1] + ' ' + y;
-  const cls = maturityClass(maturity);
-  const flag = cls === 'maturity-urgent' ? ' ⚑' : '';
-  return `<span class="${cls}">${label}${flag}</span>`;
+function getAllLoans() {
+  const loans = [];
+  CATEGORIES.forEach(cat => {
+    if (!cat.isAsset) cat.groups.forEach(g => g.loans.forEach(l => loans.push(l)));
+  });
+  return loans;
 }
 
-function findNextMaturity() {
-  return LOANS.reduce((best, l) => {
-    const d = monthsDiff(l.maturity);
-    return (d >= 0 && d < monthsDiff(best ? best.maturity : null)) ? l : best;
-  }, null);
+function renderKPIs() {
+  const loans = getAllLoans();
+  const total = loans.reduce((s,l) => s+l.balance, 0);
+  const avgRate = loans.reduce((s,l) => s+l.rate, 0)/loans.length;
+  const nextMat = findNextMat();
+  const [ny,nm] = nextMat.split('-');
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  document.getElementById('kpi-total').textContent = fmtFull(total);
+  document.getElementById('kpi-count').textContent = loans.length;
+  document.getElementById('kpi-rate').textContent = avgRate.toFixed(2)+'%';
+  document.getElementById('kpi-maturity').textContent = mon[parseInt(nm,10)-1]+' '+ny;
+  document.getElementById('kpi-maturity').className = 'kpi-value red';
 }
 
-// ══════════════════════════════════════════
-// LOAN INDEX
-// ══════════════════════════════════════════
-function renderLoanIndex() {
-  renderSummaryCards();
-  renderLenderTabs();
-  renderLoanTable();
-}
+function renderLenderStrip() {
+  const allLoans = getAllLoans();
+  const counts = {All: allLoans.length};
+  LENDER_CHIPS.slice(1).forEach(chip => {
+    counts[chip.id] = 0;
+    CATEGORIES.forEach(cat => {
+      cat.groups.forEach(g => {
+        if (chip.lenders.includes(g.lender)) counts[chip.id] += g.loans.length;
+      });
+    });
+  });
 
-function renderSummaryCards() {
-  const totalDebt = LOANS.reduce((s, l) => s + l.balance, 0);
-  const avgRate   = LOANS.reduce((s, l) => s + l.rate, 0) / LOANS.length;
-  const next      = findNextMaturity();
-  const [ny, nm]  = next.maturity.split('-');
-  const mon = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const nextLabel = mon[parseInt(nm,10)-1] + ' ' + ny;
-
-  document.getElementById('index-summary').innerHTML = `
-    <div class="summary-card">
-      <div class="summary-label">Total Debt</div>
-      <div class="summary-value">${fmtFull(totalDebt)}</div>
-    </div>
-    <div class="summary-card">
-      <div class="summary-label"># of Loans</div>
-      <div class="summary-value blue">${LOANS.length}</div>
-    </div>
-    <div class="summary-card">
-      <div class="summary-label">Avg Interest Rate</div>
-      <div class="summary-value">${avgRate.toFixed(2)}%</div>
-    </div>
-    <div class="summary-card">
-      <div class="summary-label">Next Maturity ⚑</div>
-      <div class="summary-value red" style="font-size:12px;">${nextLabel}</div>
-    </div>
-  `;
-}
-
-function renderLenderTabs() {
-  const lenders = ['All','Wintrust','BMO','Webster','Paccar','NR'];
-  const counts  = { All: LOANS.length, NR: NOTES_RECEIVABLE.length };
-  ['Wintrust','BMO','Webster','Paccar'].forEach(l => { counts[l] = LOANS.filter(x => x.lender === l).length; });
-
-  document.getElementById('lender-tabs').innerHTML = lenders.map(l => {
-    const isAll    = l === 'All';
-    const cfg      = LENDER_CONFIG[l];
-    const isActive = activeLender === l;
-    const cls      = isAll
-      ? (isActive ? 'active-all' : '')
-      : (cfg.cls + (isActive ? ' active' : ''));
-    const label    = isAll ? 'All Loans' : cfg.label;
-    return `<div class="lender-tab ${cls}" onclick="setLenderFilter('${l}')">${label}<span class="tab-count">${counts[l]}</span></div>`;
+  document.getElementById('lender-strip').innerHTML = LENDER_CHIPS.map(chip => {
+    const isActive = activeLender === chip.id;
+    const cls = chip.id === 'All'
+      ? ('ls-chip' + (isActive ? ' all-active' : ''))
+      : ('ls-chip ' + chip.cls + (isActive ? ' active' : ''));
+    return '<div class="'+cls+'" onclick="setLender(''+chip.id+'')">'+(chip.id==='All'?'All Lenders':chip.label)+'<span class="lc">'+counts[chip.id]+'</span></div>';
   }).join('');
 }
 
-function setLenderFilter(lender) {
-  activeLender = lender;
-  loanSortCol  = null;
-  loanSortAsc  = true;
-  renderLenderTabs();
-  renderLoanTable();
+function setLender(id) {
+  activeLender = id;
+  renderLenderStrip();
+  renderLoanCategories();
 }
 
-function sortLoans(col) {
-  if (loanSortCol === col) loanSortAsc = !loanSortAsc;
-  else { loanSortCol = col; loanSortAsc = true; }
-  renderLoanTable();
+function toggleCat(id) {
+  if (openCategories.has(id)) openCategories.delete(id);
+  else openCategories.add(id);
+  renderLoanCategories();
 }
 
-function renderLoanTable() {
-  const wrap = document.getElementById('index-table-wrap');
-  if (activeLender === 'NR') { wrap.innerHTML = buildNRSection(); return; }
+function toggleLG(id) {
+  if (openLenderGroups.has(id)) openLenderGroups.delete(id);
+  else openLenderGroups.add(id);
+  renderLoanCategories();
+}
 
-  const lenders = activeLender === 'All' ? ['Wintrust','BMO','Webster','Paccar'] : [activeLender];
+function renderLoanCategories() {
+  const scroll = document.getElementById('loan-scroll');
   let html = '';
 
-  if (activeLender === 'All') {
-    const grand = LOANS.reduce((s, l) => s + l.balance, 0);
-    html += `<div class="grand-total-row">
-      <span class="grand-total-label">Grand Total — All Lenders (${LOANS.length} loans)</span>
-      <span class="grand-total-amount">${fmtFull(grand)}</span>
-    </div>`;
-  }
+  const activeLenders = LENDER_CHIPS.find(c=>c.id===activeLender)?.lenders || [];
 
-  lenders.forEach(name => {
-    const loans = LOANS.filter(l => l.lender === name);
-    if (!loans.length) return;
-    const cfg = LENDER_CONFIG[name];
+  CATEGORIES.forEach(cat => {
+    // Filter groups by active lender
+    const groups = activeLender === 'All' ? cat.groups
+      : cat.groups.filter(g => activeLenders.includes(g.lender));
+    if (!groups.length) return;
 
-    let sorted = [...loans];
-    if (loanSortCol) {
-      sorted.sort((a, b) => {
-        let av = a[loanSortCol], bv = b[loanSortCol];
-        if (typeof av === 'string') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
-        return loanSortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    const catLoans = groups.flatMap(g => g.loans);
+    const catTotal = catLoans.filter(l => l.balance).reduce((s,l) => s+l.balance, 0);
+    const isOpen = openCategories.has(cat.id);
+
+    html += '<div class="loan-category '+(isOpen?'open':'')+' '+cat.type+'" id="cat-'+cat.id+'">';
+    html += '<div class="loan-cat-header" onclick="toggleCat(''+cat.id+'')">';
+    html += '<div class="loan-cat-left">';
+    html += '<div class="cat-dot-lg" style="background:'+cat.dotColor+';"></div>';
+    html += '<div class="cat-label-block">';
+    html += '<div class="cat-name">'+esc(cat.label)+'</div>';
+    html += '<div class="cat-meta">'+catLoans.length+' instrument'+(catLoans.length!==1?'s':'')+' across '+groups.length+' lender'+(groups.length!==1?'s':'')+'</div>';
+    html += '</div></div>';
+    html += '<div class="cat-right">';
+    html += '<div class="cat-total">'+(cat.isAsset ? '<span style="color:#a78bfa">ASSETS</span>' : fmtFull(catTotal))+'</div>';
+    html += '<div class="cat-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>';
+    html += '</div></div>';
+
+    if (isOpen) {
+      html += '<div class="loan-rows">';
+
+      if (cat.isAsset) {
+        html += '<div class="nr-banner">';
+        html += '<div class="nr-banner-title"><svg width="12" height="12" viewBox="0 0 24 24" stroke="#c4b5fd" fill="none" stroke-width="2"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8l-6.1 3.2 1.2-6.8-5-4.9 6.9-1z"/></svg>Notes Receivable — Money Owed TO Meiborg</div>';
+        html += '<div class="nr-stats">';
+        html += '<div class="nr-stat"><div class="nr-stat-label">Operators</div><div class="nr-stat-value">31+</div></div>';
+        html += '<div class="nr-stat"><div class="nr-stat-label">Weekly Range</div><div class="nr-stat-value" style="font-size:11px;">$307–$997</div></div>';
+        html += '<div class="nr-stat"><div class="nr-stat-label">Rockford Note</div><div class="nr-stat-value">$100K</div></div>';
+        html += '</div></div>';
+      }
+
+      groups.forEach(g => {
+        const lgId = cat.id + '_' + g.lender;
+        const lgOpen = openLenderGroups.has(lgId);
+        const lgTotal = g.loans.filter(l=>l.balance).reduce((s,l)=>s+l.balance,0);
+
+        html += '<div class="lender-group '+(lgOpen?'lg-open':'')+'" id="lg-'+lgId+'">';
+        html += '<div class="lender-group-header" onclick="toggleLG(''+lgId+'')">';
+        html += '<div class="lg-left"><span class="lg-badge '+g.badge+'">'+esc(g.lender)+'</span>';
+        html += '<span class="lg-count">'+g.loans.length+' loan'+(g.loans.length!==1?'s':'')+'</span></div>';
+        html += '<div style="display:flex;align-items:center;gap:8px;">';
+        html += '<div class="lg-total">'+(lgTotal?fmtFull(lgTotal):'—')+'</div>';
+        html += '<div class="lg-chevron"><svg viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>';
+        html += '</div></div>';
+
+        if (lgOpen) {
+          html += '<div class="lender-group-rows">';
+          // Column headers
+          html += '<div style="display:grid;grid-template-columns:55px 1fr 80px 38px 55px;gap:0;padding:4px 14px 4px 30px;background:rgba(22,29,42,0.8);border-top:1px solid var(--border);">';
+          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;">Entity</div>';
+          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;padding-left:6px;">Description</div>';
+          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Balance</div>';
+          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:center;">Rate</div>';
+          html += '<div style="font-size:8.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;text-align:right;">Matures</div>';
+          html += '</div>';
+
+          g.loans.forEach(loan => {
+            html += '<div class="loan-row">';
+            html += '<span class="lr-entity entity-'+loan.entity+'">'+esc(loan.entity)+'</span>';
+            html += '<div class="lr-desc" title="'+esc(loan.desc)+'">'+esc(loan.desc)+'</div>';
+            html += '<div class="lr-balance'+(cat.isAsset?' is-asset':'')+'">';
+            if (loan.balance) html += fmtFull(loan.balance);
+            else if (loan.weekly) html += '<span style="color:var(--gold);font-size:9.5px;">'+esc(loan.weekly)+'</span>';
+            else html += '<span style="color:var(--text3)">—</span>';
+            html += '</div>';
+            html += '<div class="lr-rate">'+(loan.rate ? loan.rate.toFixed(2)+'%' : '—')+'</div>';
+            html += '<div class="lr-maturity">'+fmtMat(loan.maturity)+'</div>';
+            html += '</div>';
+          });
+
+          // Lender subtotal
+          if (lgTotal) {
+            html += '<div class="cat-subtotal">';
+            html += '<span class="cst-label">'+g.lender+' Subtotal</span>';
+            html += '<span class="cst-val" style="color:'+cat.color+'">'+fmtFull(lgTotal)+'</span>';
+            html += '</div>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
       });
+
+      // Category total (if not asset)
+      if (!cat.isAsset && catTotal) {
+        html += '<div class="cat-subtotal" style="background:var(--bg4);">';
+        html += '<span class="cst-label" style="font-weight:700;">Category Total</span>';
+        html += '<span class="cst-val" style="color:'+cat.color+';font-size:13px;">'+fmtFull(catTotal)+'</span>';
+        html += '</div>';
+      }
+
+      html += '</div>'; // loan-rows
     }
-
-    const total = loans.reduce((s, l) => s + l.balance, 0);
-    const sc = col => loanSortCol === col ? (loanSortAsc ? 'sort-asc' : 'sort-desc') : '';
-
-    html += `
-      <div class="lender-section">
-        <div class="lender-section-header">
-          <div class="lender-section-title">
-            <span class="lender-badge ${cfg.badge}">${cfg.label}</span>
-            <span style="color:var(--text3);font-size:10px;font-family:'IBM Plex Mono',monospace;">${loans.length} loan${loans.length!==1?'s':''}</span>
-          </div>
-          <div class="lender-section-total" style="color:${cfg.color};">${fmtFull(total)}</div>
-        </div>
-        <table class="loan-table">
-          <colgroup>
-            <col class="col-entity"><col class="col-desc"><col class="col-balance">
-            <col class="col-rate"><col class="col-maturity"><col class="col-contact">
-          </colgroup>
-          <thead>
-            <tr>
-              <th class="${sc('entity')}"  onclick="sortLoans('entity')">Entity</th>
-              <th class="${sc('desc')}"    onclick="sortLoans('desc')">Description</th>
-              <th class="${sc('balance')}" onclick="sortLoans('balance')">Balance</th>
-              <th class="${sc('rate')}"    onclick="sortLoans('rate')">Rate</th>
-              <th class="${sc('maturity')}"onclick="sortLoans('maturity')">Matures</th>
-              <th class="${sc('contact')}" onclick="sortLoans('contact')">Contact</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sorted.map(loan => `
-              <tr>
-                <td><span class="entity-badge entity-${loan.entity}">${loan.entity}</span></td>
-                <td class="td-desc" title="${escHtml(loan.desc)}">${escHtml(loan.desc)}</td>
-                <td class="td-balance">${fmtFull(loan.balance)}</td>
-                <td class="td-rate">${loan.rate.toFixed(2)}%</td>
-                <td class="td-maturity">${formatMaturity(loan.maturity)}</td>
-                <td class="td-contact" title="${escHtml(loan.contact)}">${escHtml(loan.contact.split(' ')[0])}</td>
-              </tr>`).join('')}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" style="color:var(--text3);font-size:9.5px;font-family:'IBM Plex Mono',monospace;">SUBTOTAL</td>
-              <td class="td-balance">${fmtFull(total)}</td>
-              <td colspan="3"></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>`;
+    html += '</div>'; // loan-category
   });
 
-  wrap.innerHTML = html;
+  scroll.innerHTML = html;
 }
 
-function buildNRSection() {
-  const known = NOTES_RECEIVABLE.filter(n => n.balance).reduce((s, n) => s + n.balance, 0);
-  return `
-    <div class="nr-info-box">
-      <div class="nr-info-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" stroke="#c4b5fd" fill="none" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Notes Receivable — Assets Owed TO Meiborg
-      </div>
-      <div class="nr-info-grid">
-        <div class="nr-stat"><div class="nr-stat-label">Owner-Operators</div><div class="nr-stat-value">31+</div></div>
-        <div class="nr-stat"><div class="nr-stat-label">Weekly Pmts Range</div><div class="nr-stat-value" style="font-size:11px;">$307–$997</div></div>
-        <div class="nr-stat"><div class="nr-stat-label">Rockford Brake Note</div><div class="nr-stat-value">$100,000</div></div>
-        <div class="nr-stat"><div class="nr-stat-label">Program Type</div><div class="nr-stat-value" style="font-size:10px;">Lease-Purchase</div></div>
-      </div>
-    </div>
-    <table class="loan-table" style="border-radius:var(--radius);">
-      <thead>
-        <tr>
-          <th style="width:70px;">Entity</th>
-          <th>Description</th>
-          <th style="width:100px;">Balance / Terms</th>
-          <th style="width:70px;">Contact</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${NOTES_RECEIVABLE.map(n => `
-          <tr>
-            <td><span class="entity-badge" style="background:rgba(139,92,246,0.15);color:#c4b5fd;">${n.entity}</span></td>
-            <td class="td-desc" title="${escHtml(n.desc)}">${escHtml(n.desc)}</td>
-            <td class="td-balance receivable">${n.balance ? fmtFull(n.balance) : `<span style="color:var(--amber);font-size:10px;">${n.weekly}</span>`}</td>
-            <td class="td-contact">${n.contact}</td>
-          </tr>`).join('')}
-      </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2" style="color:var(--text3);font-size:9.5px;font-family:'IBM Plex Mono',monospace;">KNOWN TOTAL</td>
-          <td class="td-balance receivable">${fmtFull(known)}+</td>
-          <td></td>
-        </tr>
-      </tfoot>
-    </table>
-    <div style="margin-top:10px;padding:9px 11px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);font-size:10.5px;color:var(--text3);line-height:1.6;">
-      <strong style="color:#c4b5fd;">Note:</strong> Notes receivable are <em>assets</em>, not liabilities. These are amounts owed <em>to</em> Meiborg and are separate from the outstanding debt schedule shown in the other tabs.
-    </div>`;
+function renderFooter() {
+  const loans = getAllLoans();
+  const total = loans.reduce((s,l)=>s+l.balance,0);
+  const count = loans.length;
+  document.getElementById('df-total').textContent = fmtFull(total);
+  document.getElementById('df-sub').textContent = count + ' active loans across 4 lenders · 5 legal entities';
 }
 
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 // FILE HANDLING
-// ══════════════════════════════════════════
-function setupDrop() {
-  const zone = document.getElementById('drop-zone');
-  zone.addEventListener('click', () => document.getElementById('file-input').click());
-  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); handleFiles(e.dataTransfer.files); });
+// ═══════════════════════════════════════
+function setupDrop(){
+  const zone=document.getElementById('drop-zone');
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');handleFiles(e.dataTransfer.files);});
 }
-
-function handleFiles(fileList) {
-  Array.from(fileList).forEach(file => {
-    const ext = file.name.split('.').pop().toLowerCase();
-    if (!['xlsx','xls','csv'].includes(ext)) { showToast('Unsupported: .' + ext, 'error'); return; }
-    const reader = new FileReader();
-    reader.onload = e => {
-      const sheets = parseFile(e.target.result, ext);
-      if (!sheets) { showToast('Could not parse ' + file.name, 'error'); return; }
-      const id    = Date.now() + Math.random();
-      const entry = { id, name: file.name, ext, date: new Date().toLocaleDateString(), base64: e.target.result, sheets };
-      files.unshift(entry);
-      persistFiles();
-      renderSidebar();
-      setActiveFile(id);
-      showToast('Loaded ' + file.name, 'success');
+function handleFiles(fl){
+  Array.from(fl).forEach(file=>{
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(!['xlsx','xls','csv'].includes(ext)){showToast('Unsupported: .'+ext,'error');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const sheets=parseFile(e.target.result,ext);
+      if(!sheets){showToast('Could not parse '+file.name,'error');return;}
+      const id=Date.now()+Math.random();
+      const entry={id,name:file.name,ext,date:new Date().toLocaleDateString(),base64:e.target.result,sheets};
+      files.unshift(entry);persistFiles();renderSidebar();setActiveFile(id);showToast('Loaded '+file.name,'success');
     };
     reader.readAsDataURL(file);
   });
 }
-
-function parseFile(dataUrl, ext) {
-  try {
-    const b64    = dataUrl.split(',')[1];
-    const binary = atob(b64);
-    const bytes  = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const wb = ext === 'csv'
-      ? XLSX.read(new TextDecoder().decode(bytes), { type: 'string' })
-      : XLSX.read(bytes, { type: 'array' });
-    return wb.SheetNames.map(name => ({
-      name,
-      data: XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '' })
-    }));
-  } catch(e) { console.error(e); return null; }
+function parseFile(dataUrl,ext){
+  try{
+    const b64=dataUrl.split(',')[1];const binary=atob(b64);const bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+    const wb=ext==='csv'?XLSX.read(new TextDecoder().decode(bytes),{type:'string'}):XLSX.read(bytes,{type:'array'});
+    return wb.SheetNames.map(name=>({name,data:XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,defval:''})}));
+  }catch(e){console.error(e);return null;}
 }
+function persistFiles(){try{localStorage.setItem(STORAGE,JSON.stringify(files));}catch(e){if(files.length>1){files.pop();persistFiles();}else showToast('Storage full','error');}}
+function loadFiles(){try{const raw=localStorage.getItem(STORAGE);if(raw){files=JSON.parse(raw);renderSidebar();}}catch(e){files=[];}}
+function deleteFile(id,e){e.stopPropagation();files=files.filter(f=>f.id!==id);persistFiles();if(activeFileId===id){activeFileId=null;}renderSidebar();showToast('File removed');}
+function setActiveFile(id){activeFileId=id;activeSheet=0;sortState={col:-1,asc:true};renderSidebar();renderViewer();}
 
-function persistFiles() {
-  try {
-    localStorage.setItem(STORAGE_FILES, JSON.stringify(files));
-  } catch(e) {
-    if (files.length > 1) { files.pop(); persistFiles(); }
-    else showToast('Storage full', 'error');
-  }
-}
-
-function loadFiles() {
-  try {
-    const raw = localStorage.getItem(STORAGE_FILES);
-    if (raw) { files = JSON.parse(raw); renderSidebar(); }
-  } catch(e) { files = []; }
-}
-
-function deleteFile(id, e) {
-  e.stopPropagation();
-  files = files.filter(f => f.id !== id);
-  persistFiles();
-  if (activeFileId === id) { activeFileId = null; showViewer(false); }
-  renderSidebar();
-  showToast('File removed');
-}
-
-function setActiveFile(id) {
-  activeFileId = id;
-  activeSheet  = 0;
-  sortState    = { col: -1, asc: true };
-  renderSidebar();
-  renderViewer();
-}
-
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 // SIDEBAR
-// ══════════════════════════════════════════
-function renderSidebar() {
-  const list  = document.getElementById('file-list');
-  const empty = document.getElementById('empty-files');
-  document.getElementById('file-count').textContent = files.length;
-  if (!files.length) { empty.style.display = ''; list.innerHTML = ''; list.appendChild(empty); return; }
-  empty.style.display = 'none';
-  list.innerHTML = files.map(f => `
-    <div class="file-item ${f.id === activeFileId ? 'active' : ''}" onclick="setActiveFile(${JSON.stringify(f.id)})">
-      <div class="file-icon"><span class="${f.ext==='csv'?'csv-badge':'xlsx-badge'}">${f.ext.toUpperCase()}</span></div>
-      <div class="file-info">
-        <div class="file-name" title="${escHtml(f.name)}">${escHtml(f.name)}</div>
-        <div class="file-meta">${f.date} · ${f.sheets.length} sheet${f.sheets.length!==1?'s':''}</div>
-      </div>
-      <button class="file-delete" onclick="deleteFile(${JSON.stringify(f.id)}, event)" title="Remove">
-        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-      </button>
-    </div>`).join('');
-}
-
-// ══════════════════════════════════════════
-// VIEWER
-// ══════════════════════════════════════════
-function showViewer(yes) {
-  document.getElementById('viewer-empty').style.display = yes ? 'none' : 'flex';
-  document.getElementById('viewer-content').style.display = yes ? 'flex' : 'none';
-}
-
-function renderViewer() {
-  const file = files.find(f => f.id === activeFileId);
-  if (!file) { showViewer(false); return; }
-  showViewer(true);
-  document.getElementById('active-file-name').textContent = file.name;
-  document.getElementById('active-file-meta').textContent = `${file.date} · ${file.sheets.length} sheet${file.sheets.length!==1?'s':''}`;
-  renderTabs(file);
-  renderSheet(file, activeSheet);
-}
-
-function renderTabs(file) {
-  document.getElementById('tab-bar').innerHTML = file.sheets.map((s, i) =>
-    `<div class="sheet-tab ${i===activeSheet?'active':''}" onclick="switchSheet(${i})">${escHtml(s.name)}</div>`
+// ═══════════════════════════════════════
+function renderSidebar(){
+  const list=document.getElementById('file-list');
+  const empty=document.getElementById('empty-files');
+  document.getElementById('file-count').textContent=files.length;
+  if(!files.length){empty.style.display='';list.innerHTML='';list.appendChild(empty);return;}
+  empty.style.display='none';
+  list.innerHTML=files.map(f=>'<div class="file-item '+(f.id===activeFileId?'active':'')+'" onclick="setActiveFile('+JSON.stringify(f.id)+')">'
+    +'<div class="file-icon"><span class="'+(f.ext==='csv'?'csv-badge':'xlsx-badge')+'">'+f.ext.toUpperCase()+'</span></div>'
+    +'<div class="file-info"><div class="file-name" title="'+esc(f.name)+'">'+esc(f.name)+'</div>'
+    +'<div class="file-meta">'+f.date+' · '+f.sheets.length+' sheet'+(f.sheets.length!==1?'s':'')+'</div></div>'
+    +'<button class="file-delete" onclick="deleteFile('+JSON.stringify(f.id)+',event)" title="Remove">'
+    +'<svg viewBox="0 0 24 24" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button></div>'
   ).join('');
 }
 
-function switchSheet(i) {
-  activeSheet = i;
-  sortState   = { col: -1, asc: true };
-  const file  = files.find(f => f.id === activeFileId);
-  if (file) { renderTabs(file); renderSheet(file, i); }
+// ═══════════════════════════════════════
+// VIEWER (RAW TABLE)
+// ═══════════════════════════════════════
+function renderViewer(){
+  const file=files.find(f=>f.id===activeFileId);
+  const viewerEmpty=document.getElementById('viewer-empty');
+  const viewerContent=document.getElementById('viewer-content');
+  if(!file){viewerEmpty.style.display='flex';viewerContent.style.display='none';return;}
+  viewerEmpty.style.display='none';viewerContent.style.display='flex';
+  document.getElementById('active-file-name').textContent=file.name;
+  document.getElementById('active-file-meta').textContent=file.date+' · '+file.sheets.length+' sheet'+(file.sheets.length!==1?'s':'');
+  renderTabs(file);renderSheet(file,activeSheet);
+}
+function renderTabs(file){
+  document.getElementById('tab-bar').innerHTML=file.sheets.map((s,i)=>'<div class="sheet-tab '+(i===activeSheet?'active':'')+'" onclick="switchSheet('+i+')">'+esc(s.name)+'</div>').join('');
+}
+function switchSheet(i){activeSheet=i;sortState={col:-1,asc:true};const file=files.find(f=>f.id===activeFileId);if(file){renderTabs(file);renderSheet(file,i);}}
+function renderSheet(file,idx){
+  const sheet=file.sheets[idx];
+  if(!sheet||!sheet.data.length){document.getElementById('stats-bar').innerHTML='<span class="stat-chip">Empty sheet</span>';document.querySelector('#data-table thead').innerHTML='';document.querySelector('#data-table tbody').innerHTML='<tr><td style="padding:18px;color:var(--text3)">No data.</td></tr>';return;}
+  const headers=sheet.data[0];
+  const allBody=sortState.col>=0?sortRows(sheet.data.slice(1),sortState.col,sortState.asc):sheet.data.slice(1);
+  const dataRows=allBody.filter(r=>r.some(c=>c!==''));
+  document.getElementById('stats-bar').innerHTML='<span class="stat-chip"><span class="val">'+dataRows.length.toLocaleString()+'</span> rows</span><span class="stat-chip"><span class="val">'+headers.length+'</span> cols</span>';
+  document.querySelector('#data-table thead').innerHTML='<tr>'+headers.map((h,i)=>{const arr=sortState.col===i?(sortState.asc?' ▲':' ▼'):' ⇅';return'<th onclick="sortByCol('+i+')">'+esc(String(h))+'<span class="sort-arrow">'+arr+'</span></th>'}).join('')+'</tr>';
+  const MAX=2000;document.querySelector('#data-table tbody').innerHTML=allBody.slice(0,MAX).map(row=>'<tr>'+headers.map((h,ci)=>'<td>'+fmtCell(String(h),row[ci]??'')+'</td>').join('')+'</tr>').join('')+(allBody.length>MAX?'<tr><td colspan="'+headers.length+'" style="text-align:center;color:var(--text3);padding:10px;font-size:10px;">Showing first '+MAX+' of '+allBody.length.toLocaleString()+' rows</td></tr>':'');
+}
+function sortByCol(col){sortState=sortState.col===col?{col,asc:!sortState.asc}:{col,asc:true};const file=files.find(f=>f.id===activeFileId);if(file)renderSheet(file,activeSheet);}
+function sortRows(rows,col,asc){return[...rows].sort((a,b)=>{const av=a[col]??'',bv=b[col]??'';const an=parseFloat(String(av).replace(/[$,%]/g,'')),bn=parseFloat(String(bv).replace(/[$,%]/g,''));const cmp=(!isNaN(an)&&!isNaN(bn))?an-bn:String(av).localeCompare(String(bv));return asc?cmp:-cmp;});}
+function fmtCell(header,val){
+  if(val===''||val==null)return'<span style="color:var(--text3)">—</span>';
+  const str=String(val);const h=header.toLowerCase();const num=parseFloat(str.replace(/[$,%\s]/g,''));
+  const ENTITIES=['Bros','Enterprise','WHS','SAE','MH1','MH2','MH3','MH5'];
+  const ent=ENTITIES.find(e=>str.trim().toUpperCase()===e.toUpperCase());
+  if(ent)return'<span class="cell-entity entity-'+ent+'">'+esc(str)+'</span>';
+  if(/\$/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)){if(!isNaN(num))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtCell2(num)+'</span>';}
+  if(/rate|percent|%/.test(h)||str.includes('%'))return'<span class="cell-pct">'+esc(str)+'</span>';
+  if(!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h))return'<span class="'+(num<0?'cell-negative':'cell-dollar')+'">'+fmtCell2(num)+'</span>';
+  return esc(str);
+}
+function exportCSV(){
+  const file=files.find(f=>f.id===activeFileId);if(!file)return;const sheet=file.sheets[activeSheet];if(!sheet)return;
+  const csv=sheet.data.map(row=>row.map(c=>{const s=String(c??'');return(s.includes(',')||s.includes('"')||s.includes('\n'))?'"'+s.replace(/"/g,'""')+'"':s;}).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=file.name.replace(/\.[^.]+$/,'')+'_'+file.sheets[activeSheet].name+'.csv';a.click();showToast('CSV exported');
 }
 
-function renderSheet(file, idx) {
-  const sheet = file.sheets[idx];
-  if (!sheet || !sheet.data.length) {
-    document.getElementById('stats-bar').innerHTML = '<span class="stat-chip">Empty sheet</span>';
-    document.querySelector('#data-table thead').innerHTML = '';
-    document.querySelector('#data-table tbody').innerHTML = '<tr><td style="padding:20px;color:var(--text3)">No data.</td></tr>';
-    return;
-  }
-
-  const headers  = sheet.data[0];
-  const allBody  = sortState.col >= 0 ? sortRows(sheet.data.slice(1), sortState.col, sortState.asc) : sheet.data.slice(1);
-  const dataRows = allBody.filter(r => r.some(c => c !== ''));
-
-  document.getElementById('stats-bar').innerHTML = `
-    <span class="stat-chip"><span class="val">${dataRows.length.toLocaleString()}</span> rows</span>
-    <span class="stat-chip"><span class="val">${headers.length}</span> cols</span>
-    <span class="stat-chip">Sheet <span class="val">${idx+1}</span>/<span class="val">${file.sheets.length}</span></span>`;
-
-  document.querySelector('#data-table thead').innerHTML = '<tr>' +
-    headers.map((h, i) => {
-      const arrow = sortState.col === i ? (sortState.asc ? ' ▲' : ' ▼') : ' ⇅';
-      return `<th onclick="sortByCol(${i})">${escHtml(String(h))}<span class="sort-arrow">${arrow}</span></th>`;
-    }).join('') + '</tr>';
-
-  const MAX = 2000;
-  document.querySelector('#data-table tbody').innerHTML =
-    allBody.slice(0, MAX).map(row =>
-      '<tr>' + headers.map((h, ci) => `<td>${formatCell(String(h), row[ci]??'')}</td>`).join('') + '</tr>'
-    ).join('') +
-    (allBody.length > MAX ? `<tr><td colspan="${headers.length}" style="text-align:center;color:var(--text3);padding:10px;font-size:10.5px;">Showing first ${MAX} of ${allBody.length.toLocaleString()} rows</td></tr>` : '');
-}
-
-function sortByCol(col) {
-  sortState = sortState.col === col ? { col, asc: !sortState.asc } : { col, asc: true };
-  const file = files.find(f => f.id === activeFileId);
-  if (file) renderSheet(file, activeSheet);
-}
-
-function sortRows(rows, col, asc) {
-  return [...rows].sort((a, b) => {
-    const av = a[col]??'', bv = b[col]??'';
-    const an = parseFloat(String(av).replace(/[$,%]/g,'')), bn = parseFloat(String(bv).replace(/[$,%]/g,''));
-    const cmp = (!isNaN(an)&&!isNaN(bn)) ? an-bn : String(av).localeCompare(String(bv));
-    return asc ? cmp : -cmp;
-  });
-}
-
-function formatCell(header, val) {
-  if (val===''||val==null) return '<span style="color:var(--text3)">—</span>';
-  const str = String(val);
-  const h   = header.toLowerCase();
-  const num = parseFloat(str.replace(/[$,%\s]/g,''));
-  const ENTITIES = ['Bros','Enterprise','WHS','SAE','MH1','MH2','MH3','MH5'];
-  const ent = ENTITIES.find(e => str.trim().toUpperCase() === e.toUpperCase());
-  if (ent) return `<span class="cell-entity entity-${ent}">${escHtml(str)}</span>`;
-  if (/\$/.test(str)||/balance|amount|principal|payment|loan|debt|outstanding/.test(h)) {
-    if (!isNaN(num)) return `<span class="${num<0?'cell-negative':'cell-dollar'}">${fmtCell(num)}</span>`;
-  }
-  if (/rate|percent|%/.test(h)||str.includes('%')) return `<span class="cell-pct">${escHtml(str)}</span>`;
-  if (!isNaN(num)&&Math.abs(num)>=1000&&/balance|amount|principal|payment|loan|debt/.test(h))
-    return `<span class="${num<0?'cell-negative':'cell-dollar'}">${fmtCell(num)}</span>`;
-  return escHtml(str);
-}
-
-function exportCSV() {
-  const file  = files.find(f => f.id === activeFileId);
-  if (!file) return;
-  const sheet = file.sheets[activeSheet];
-  if (!sheet) return;
-  const csv = sheet.data.map(row =>
-    row.map(c => { const s = String(c??''); return (s.includes(',')||s.includes('"')||s.includes('\n')) ? `"${s.replace(/"/g,'""')}"` : s; }).join(',')
-  ).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
-  a.download = file.name.replace(/\.[^.]+$/, '') + '_' + file.sheets[activeSheet].name + '.csv';
-  a.click();
-  showToast('CSV exported');
-}
-
-// ══════════════════════════════════════════
+// ═══════════════════════════════════════
 // UTILITIES
-// ══════════════════════════════════════════
-function fmtFull(n) {
-  return (n < 0 ? '-$' : '$') + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
-}
-
-function fmtCell(n) {
-  const abs = Math.abs(n);
-  const s = abs >= 1e6
-    ? '$' + (abs/1e6).toFixed(2) + 'M'
-    : '$' + abs.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
-  return (n < 0 ? '-' : '') + s;
-}
-
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function showToast(msg, type='') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (type ? ' ' + type : '');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.className = '', 2600);
-}
+// ═══════════════════════════════════════
+function fmtFull(n){return(n<0?'-$':'$')+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtCell2(n){const abs=Math.abs(n);const s=abs>=1e6?'$'+(abs/1e6).toFixed(2)+'M':'$'+abs.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return(n<0?'-':'')+s;}
+function esc(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='show'+(type?' '+type:'');clearTimeout(t._timer);t._timer=setTimeout(()=>t.className='',2600);}
 </script>
 </body>
 </html>
